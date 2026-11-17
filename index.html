@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stickman Studio</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,Arial}*{box-sizing:border-box}body{margin:0;background:#101827;color:#f4f7fb}header{padding:18px 16px;background:#172338;border-bottom:1px solid #2b3c56}h1{margin:0;font-size:1.45rem}header p{margin:5px 0 0;color:#b6c5d8;font-size:.9rem}.wrap{max-width:900px;margin:auto;padding:16px}.stage{background:#080e18;border:1px solid #31445f;border-radius:14px;overflow:hidden}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}button,select{border:0;border-radius:9px;padding:12px 15px;font-weight:700;font-size:.95rem}button{background:#69d5b1;color:#092018}button.secondary{background:#293b55;color:#fff}button:disabled{opacity:.55}.panel{background:#172338;border:1px solid #2b3c56;border-radius:12px;padding:14px;margin-top:12px}.panel h2{font-size:1rem;margin:0 0 8px}.panel p{color:#c1ccda;line-height:1.5;margin:0}.status{min-height:1.4em;color:#8ee6c8;font-size:.9rem;margin-top:8px}small{color:#9fb0c5}
+</style>
+</head>
+<body>
+<header><h1>⚡ Stickman Studio</h1><p>Your first animated short — made without drawing.</p></header>
+<main class="wrap">
+<div class="stage"><canvas id="scene" width="960" height="540" aria-label="Animated stickman story"></canvas></div>
+<div class="controls">
+<button id="play">▶ Play animation</button>
+<button id="restart" class="secondary">↻ Restart</button>
+<button id="record">● Record video</button>
+<button id="stop" class="secondary" disabled>■ Stop & save</button>
+</div>
+<div class="panel"><h2>Episode 01: The Mysterious Energy</h2><p>A curious stickman discovers a strange glowing orb. When he touches it, an incredible power awakens. Play the animation, then record it to save a video file you can upload to YouTube.</p><div class="status" id="status">Ready. Press Play animation.</div></div>
+<div class="panel"><h2>How to make your video</h2><p>1. Tap <b>Record video</b> and let the scene play through. 2. Tap <b>Stop & save</b>. 3. Your browser will download a video file (WebM). You can keep it on your device and upload it to YouTube. This first version uses generated visuals and has no voice narration yet.</p></div>
+<small>Tip: Keep this page open while recording. If your browser asks for permission, allow downloads.</small>
+</main>
+<script>
+const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d');
+const playBtn=document.getElementById('play'),restartBtn=document.getElementById('restart'),recordBtn=document.getElementById('record'),stopBtn=document.getElementById('stop'),statusEl=document.getElementById('status');
+let start=performance.now(),playing=true,recorder=null,chunks=[],recordTimer=null;
+const duration=18000;
+function line(x1,y1,x2,y2,w=9){ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
+function stickman(x,y,t,powered){
+ ctx.save();ctx.translate(x,y);ctx.strokeStyle=powered?'#8fffe0':'#f3f6ff';ctx.fillStyle=ctx.strokeStyle;
+ const step=Math.sin(t*0.009)*22, arm=Math.sin(t*0.009+1)*18;
+ ctx.lineWidth=10;ctx.lineCap='round';
+ ctx.beginPath();ctx.arc(0,-105,24,0,Math.PI*2);ctx.stroke();
+ line(0,-80,0,-20,10);line(0,-65,-28+arm,-35,8);line(0,-65,28-arm,-35,8);
+ line(0,-20,-18+step,25,9);line(0,-20,18-step,25,9);
+ if(powered){ctx.shadowColor='#5fffd1';ctx.shadowBlur=24;ctx.strokeStyle='#5fffd1';ctx.beginPath();ctx.arc(0,-55,64+Math.sin(t*.02)*5,0,Math.PI*2);ctx.stroke()}
+ ctx.restore();
+}
+function draw(now){
+ const t=(now-start)%duration, powered=t>10500;
+ ctx.clearRect(0,0,960,540);
+ const sky=ctx.createLinearGradient(0,0,0,540);sky.addColorStop(0,'#142b4b');sky.addColorStop(1,'#080f1b');ctx.fillStyle=sky;ctx.fillRect(0,0,960,540);
+ ctx.fillStyle='#f7f3cf';ctx.beginPath();ctx.arc(790,100,42,0,Math.PI*2);ctx.fill();
+ for(let i=0;i<55;i++){let x=(i*173)%960,y=(i*79)%300;ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillRect(x,y,2,2)}
+ ctx.fillStyle='#172c39';ctx.fillRect(0,430,960,110);ctx.fillStyle='#294b50';ctx.fillRect(0,430,960,5);
+ let x=t<6500?120+t/6500*340: t<11000?460:460;
+ let orbX=610,orbY=365;
+ if(t>3500&&t<11000){ctx.save();ctx.shadowColor='#55baff';ctx.shadowBlur=35;ctx.fillStyle='#6bd8ff';ctx.beginPath();ctx.arc(orbX,orbY,18+Math.sin(now*.008)*5,0,Math.PI*2);ctx.fill();ctx.restore()}
+ stickman(x,405,now,powered);
+ if(powered){ctx.fillStyle='rgba(70,255,205,.12)';ctx.fillRect(0,0,960,430)}
+ let title=t<3500?'A quiet night...':t<7500?'Something is glowing.':t<11000?'He reaches for the energy...':'A new power awakens!';
+ ctx.fillStyle='#fff';ctx.font='bold 30px system-ui';ctx.textAlign='center';ctx.fillText(title,480,65);
+ ctx.font='18px system-ui';ctx.fillStyle='#b9d7e9';ctx.fillText('STICKMAN STUDIO  •  EPISODE 01',480,510);
+ if(playing) requestAnimationFrame(draw);
+}
+function restart(){start=performance.now();playing=true;requestAnimationFrame(draw);statusEl.textContent='Animation restarted.';playBtn.textContent='Ⅱ Pause'}
+playBtn.onclick=()=>{if(playing){playing=false;playBtn.textContent='▶ Play animation';statusEl.textContent='Paused.'}else{start=performance.now();playing=true;playBtn.textContent='Ⅱ Pause';requestAnimationFrame(draw)}};
+restartBtn.onclick=restart;
+recordBtn.onclick=()=>{
+ if(!canvas.captureStream||!window.MediaRecorder){statusEl.textContent='Video recording is not supported in this browser. Try Chrome.';return}
+ chunks=[];restart();const stream=canvas.captureStream(30);
+ const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
+ recorder=new MediaRecorder(stream,{mimeType:mime});
+ recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+ recorder.onstop=()=>{const blob=new Blob(chunks,{type:'video/webm'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='stickman-episode-01.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);statusEl.textContent='Video saved! Check your Downloads folder.'};
+ recorder.start();recordBtn.disabled=true;stopBtn.disabled=false;statusEl.textContent='Recording... Let the animation play, then tap Stop & save.';
+};
+stopBtn.onclick=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();recordBtn.disabled=false;stopBtn.disabled=true};
+playBtn.textContent='Ⅱ Pause';requestAnimationFrame(draw);
+</script>
+</body></html>
