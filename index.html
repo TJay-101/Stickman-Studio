@@ -1,72 +1,67 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stickman Studio</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stickman Studio — Episode 01</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,Arial}*{box-sizing:border-box}body{margin:0;background:#101827;color:#f4f7fb}header{padding:18px 16px;background:#172338;border-bottom:1px solid #2b3c56}h1{margin:0;font-size:1.45rem}header p{margin:5px 0 0;color:#b6c5d8;font-size:.9rem}.wrap{max-width:900px;margin:auto;padding:16px}.stage{background:#080e18;border:1px solid #31445f;border-radius:14px;overflow:hidden}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}button,select{border:0;border-radius:9px;padding:12px 15px;font-weight:700;font-size:.95rem}button{background:#69d5b1;color:#092018}button.secondary{background:#293b55;color:#fff}button:disabled{opacity:.55}.panel{background:#172338;border:1px solid #2b3c56;border-radius:12px;padding:14px;margin-top:12px}.panel h2{font-size:1rem;margin:0 0 8px}.panel p{color:#c1ccda;line-height:1.5;margin:0}.status{min-height:1.4em;color:#8ee6c8;font-size:.9rem;margin-top:8px}small{color:#9fb0c5}
-</style>
-</head>
-<body>
-<header><h1>⚡ Stickman Studio</h1><p>Your first animated short — made without drawing.</p></header>
-<main class="wrap">
-<div class="stage"><canvas id="scene" width="960" height="540" aria-label="Animated stickman story"></canvas></div>
-<div class="controls">
-<button id="play">▶ Play animation</button>
-<button id="restart" class="secondary">↻ Restart</button>
-<button id="record">● Record video</button>
-<button id="stop" class="secondary" disabled>■ Stop & save</button>
-</div>
-<div class="panel"><h2>Episode 01: The Mysterious Energy</h2><p>A curious stickman discovers a strange glowing orb. When he touches it, an incredible power awakens. Play the animation, then record it to save a video file you can upload to YouTube.</p><div class="status" id="status">Ready. Press Play animation.</div></div>
-<div class="panel"><h2>How to make your video</h2><p>1. Tap <b>Record video</b> and let the scene play through. 2. Tap <b>Stop & save</b>. 3. Your browser will download a video file (WebM). You can keep it on your device and upload it to YouTube. This first version uses generated visuals and has no voice narration yet.</p></div>
-<small>Tip: Keep this page open while recording. If your browser asks for permission, allow downloads.</small>
-</main>
+:root{color-scheme:dark;font-family:system-ui,Arial}*{box-sizing:border-box}body{margin:0;background:#0a1020;color:#f5f7ff}header{padding:18px;background:#141f35;border-bottom:1px solid #2c3b59}h1{margin:0;font-size:1.45rem}header p{margin:5px 0 0;color:#b8c5db}.wrap{max-width:960px;margin:auto;padding:15px}.stage{border:1px solid #344766;border-radius:15px;overflow:hidden;background:#070d18}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}.controls{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}button,select{border:0;border-radius:9px;padding:12px 14px;font-size:.94rem;font-weight:700}button{background:#65e0bd;color:#082019}button.alt,select{background:#263754;color:#fff}button:disabled{opacity:.45}.panel{background:#141f35;border:1px solid #2c3b59;border-radius:12px;padding:14px;margin:12px 0}.panel h2{font-size:1rem;margin:0 0 7px}.panel p{color:#c4cee0;line-height:1.5;margin:0}.status{color:#8debd0;margin-top:8px;min-height:1.3em}.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px}label{color:#c4cee0;font-size:.9rem}small{color:#9eafc8}
+</style></head><body>
+<header><h1>⚡ Stickman Studio</h1><p>Episode 01 — The Mysterious Energy • Enhanced edition</p></header>
+<main class="wrap"><div class="stage"><canvas id="scene" width="960" height="540"></canvas></div>
+<div class="controls"><button id="play">Ⅱ Pause</button><button id="restart" class="alt">↻ Restart</button><button id="record">● Record full episode</button><button id="stop" class="alt" disabled>■ Stop & save</button></div>
+<section class="panel"><h2>Sound & voice</h2><div class="row"><label><input id="musicToggle" type="checkbox" checked> Background music</label><label><input id="voiceToggle" type="checkbox" checked> Spoken narration</label><label for="voice">Voice:</label><select id="voice"><option value="">Default device voice</option></select></div><div class="status" id="status">Ready. Tap Play to hear the story.</div></section>
+<section class="panel"><h2>What's improved?</h2><p>More detailed animated scenes, a second character, action effects, story captions, spoken narration using your device's available voice, and original electronic background music. Record full episode to save the animation with its generated music track.</p></section>
+<section class="panel"><h2>Important about vocals</h2><p>The spoken narration uses your browser/device text-to-speech voice. Some Android browsers do not let websites include that system voice in the recorded video, even though you can hear it during playback. The background music is included in the exported video. We'll add a proper recorded voice track in a later upgrade.</p></section>
+<small>Use Chrome for best results. Keep this page open while recording.</small></main>
 <script>
-const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d');
-const playBtn=document.getElementById('play'),restartBtn=document.getElementById('restart'),recordBtn=document.getElementById('record'),stopBtn=document.getElementById('stop'),statusEl=document.getElementById('status');
-let start=performance.now(),playing=true,recorder=null,chunks=[],recordTimer=null;
-const duration=18000;
-function line(x1,y1,x2,y2,w=9){ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
-function stickman(x,y,t,powered){
- ctx.save();ctx.translate(x,y);ctx.strokeStyle=powered?'#8fffe0':'#f3f6ff';ctx.fillStyle=ctx.strokeStyle;
- const step=Math.sin(t*0.009)*22, arm=Math.sin(t*0.009+1)*18;
- ctx.lineWidth=10;ctx.lineCap='round';
- ctx.beginPath();ctx.arc(0,-105,24,0,Math.PI*2);ctx.stroke();
- line(0,-80,0,-20,10);line(0,-65,-28+arm,-35,8);line(0,-65,28-arm,-35,8);
- line(0,-20,-18+step,25,9);line(0,-20,18-step,25,9);
- if(powered){ctx.shadowColor='#5fffd1';ctx.shadowBlur=24;ctx.strokeStyle='#5fffd1';ctx.beginPath();ctx.arc(0,-55,64+Math.sin(t*.02)*5,0,Math.PI*2);ctx.stroke()}
- ctx.restore();
-}
-function draw(now){
- const t=(now-start)%duration, powered=t>10500;
- ctx.clearRect(0,0,960,540);
- const sky=ctx.createLinearGradient(0,0,0,540);sky.addColorStop(0,'#142b4b');sky.addColorStop(1,'#080f1b');ctx.fillStyle=sky;ctx.fillRect(0,0,960,540);
- ctx.fillStyle='#f7f3cf';ctx.beginPath();ctx.arc(790,100,42,0,Math.PI*2);ctx.fill();
- for(let i=0;i<55;i++){let x=(i*173)%960,y=(i*79)%300;ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillRect(x,y,2,2)}
- ctx.fillStyle='#172c39';ctx.fillRect(0,430,960,110);ctx.fillStyle='#294b50';ctx.fillRect(0,430,960,5);
- let x=t<6500?120+t/6500*340: t<11000?460:460;
- let orbX=610,orbY=365;
- if(t>3500&&t<11000){ctx.save();ctx.shadowColor='#55baff';ctx.shadowBlur=35;ctx.fillStyle='#6bd8ff';ctx.beginPath();ctx.arc(orbX,orbY,18+Math.sin(now*.008)*5,0,Math.PI*2);ctx.fill();ctx.restore()}
- stickman(x,405,now,powered);
- if(powered){ctx.fillStyle='rgba(70,255,205,.12)';ctx.fillRect(0,0,960,430)}
- let title=t<3500?'A quiet night...':t<7500?'Something is glowing.':t<11000?'He reaches for the energy...':'A new power awakens!';
- ctx.fillStyle='#fff';ctx.font='bold 30px system-ui';ctx.textAlign='center';ctx.fillText(title,480,65);
- ctx.font='18px system-ui';ctx.fillStyle='#b9d7e9';ctx.fillText('STICKMAN STUDIO  •  EPISODE 01',480,510);
- if(playing) requestAnimationFrame(draw);
-}
-function restart(){start=performance.now();playing=true;requestAnimationFrame(draw);statusEl.textContent='Animation restarted.';playBtn.textContent='Ⅱ Pause'}
-playBtn.onclick=()=>{if(playing){playing=false;playBtn.textContent='▶ Play animation';statusEl.textContent='Paused.'}else{start=performance.now();playing=true;playBtn.textContent='Ⅱ Pause';requestAnimationFrame(draw)}};
-restartBtn.onclick=restart;
-recordBtn.onclick=()=>{
- if(!canvas.captureStream||!window.MediaRecorder){statusEl.textContent='Video recording is not supported in this browser. Try Chrome.';return}
- chunks=[];restart();const stream=canvas.captureStream(30);
- const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
- recorder=new MediaRecorder(stream,{mimeType:mime});
- recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
- recorder.onstop=()=>{const blob=new Blob(chunks,{type:'video/webm'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='stickman-episode-01.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);statusEl.textContent='Video saved! Check your Downloads folder.'};
- recorder.start();recordBtn.disabled=true;stopBtn.disabled=false;statusEl.textContent='Recording... Let the animation play, then tap Stop & save.';
-};
-stopBtn.onclick=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();recordBtn.disabled=false;stopBtn.disabled=true};
-playBtn.textContent='Ⅱ Pause';requestAnimationFrame(draw);
-</script>
-</body></html>
+const c=document.getElementById('scene'),g=c.getContext('2d'),$=id=>document.getElementById(id);
+let start=performance.now(),playing=true,rec=null,chunks=[],audioCtx=null,musicGain=null,musicTimer=null,lastLine=-1;
+const D=30000;
+const scenes=[
+[0,4500,'A quiet night in the city...','NOVA: Another peaceful night. Nothing ever happens here.'],
+[4500,9000,'A strange light falls from the sky!','NOVA: Wait... what is that light?'],
+[9000,13500,'A mysterious orb appears.','NOVA: I can feel energy coming from it.'],
+[13500,18000,'A shadow warrior steps forward.','SHADE: Stay away from that power. It belongs to me!'],
+[18000,22500,'The energy awakens inside Nova!','NOVA: You should have let me touch it.'],
+[22500,27000,'The first battle begins!','SHADE: Impossible! What are you?'],
+[27000,30000,'This is only the beginning...','NARRATOR: A new power has awakened. The real battle is about to begin.']
+];
+function speech(text){if(!$('voiceToggle').checked||!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.94;u.pitch=1;const v=$('voice').value;if(v!==''){const voice=speechSynthesis.getVoices().find(x=>x.name===v);if(voice)u.voice=voice;}speechSynthesis.speak(u)}
+function setupVoices(){if(!('speechSynthesis'in window))return;const sel=$('voice');speechSynthesis.getVoices().forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o)})}
+setupVoices();if('speechSynthesis'in window)speechSynthesis.onvoiceschanged=setupVoices;
+function musicOn(){if(audioCtx)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audioCtx=new AC();musicGain=audioCtx.createGain();musicGain.gain.value=$('musicToggle').checked?.11:0;musicGain.connect(audioCtx.destination);const out=audioCtx.createMediaStreamDestination();musicGain.connect(out);window.musicStream=out.stream;
+const notes=[110,146.83,164.81,130.81,98,130.81,146.83,123.47];let i=0;
+musicTimer=setInterval(()=>{if(!audioCtx)return;const t=audioCtx.currentTime;const osc=audioCtx.createOscillator(),env=audioCtx.createGain();osc.type='triangle';osc.frequency.value=notes[i++%notes.length];env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(.35,t+.06);env.gain.exponentialRampToValueAtTime(.0001,t+.65);osc.connect(env);env.connect(musicGain);osc.start(t);osc.stop(t+.7);
+const bass=audioCtx.createOscillator(),be=audioCtx.createGain();bass.type='sine';bass.frequency.value=55;be.gain.setValueAtTime(.0001,t);be.gain.exponentialRampToValueAtTime(.12,t+.03);be.gain.exponentialRampToValueAtTime(.0001,t+.3);bass.connect(be);be.connect(musicGain);bass.start(t);bass.stop(t+.32);
+},430)}
+$('musicToggle').onchange=()=>{if(musicGain)musicGain.gain.setTargetAtTime($('musicToggle').checked?.11:0,audioCtx.currentTime,.15)};
+function line(x,y,X,Y,w=8){g.lineWidth=w;g.lineCap='round';g.beginPath();g.moveTo(x,y);g.lineTo(X,Y);g.stroke()}
+function hero(x,y,t,color='#f4f7ff',power=false,action=0){g.save();g.translate(x,y);g.strokeStyle=color;g.shadowColor=power?'#54ffe0':'transparent';g.shadowBlur=power?25:0;let run=Math.sin(t*.012)*20,arm=Math.sin(t*.014)*24;
+g.beginPath();g.arc(0,-102,23,0,Math.PI*2);g.lineWidth=9;g.stroke();line(0,-78,0,-25,10);
+if(action===1){line(0,-65,-40,-95,9);line(0,-65,35,-38,9)}else if(action===2){line(0,-65,-38+arm,-35,9);line(0,-65,38-arm,-35,9)}else{line(0,-65,-30+arm,-35,9);line(0,-65,30-arm,-35,9)}
+line(0,-25,-19+run,24,10);line(0,-25,18-run,24,10);
+if(power){g.beginPath();g.arc(0,-55,62+Math.sin(t*.02)*7,0,Math.PI*2);g.lineWidth=3;g.stroke()}g.restore()}
+function background(t){let sky=g.createLinearGradient(0,0,0,540);sky.addColorStop(0,'#111d43');sky.addColorStop(1,'#080d19');g.fillStyle=sky;g.fillRect(0,0,960,540);
+for(let i=0;i<9;i++){let x=i*115+15,h=90+(i*47)%125;g.fillStyle=i%2?'#1b2d4c':'#202849';g.fillRect(x,430-h,78,h);for(let j=0;j<5;j++)for(let k=0;k<Math.floor(h/30);k++){g.fillStyle='rgba(120,190,255,.35)';g.fillRect(x+12+j*12,440-h+k*24,5,9)}}
+g.fillStyle='#101c2b';g.fillRect(0,430,960,110);g.fillStyle='#41606a';g.fillRect(0,430,960,4);
+for(let i=0;i<55;i++){g.fillStyle='rgba(255,255,255,.55)';g.fillRect((i*173)%960,(i*79)%320,2,2)}}
+function orb(x,y,t){g.save();g.shadowColor='#56cfff';g.shadowBlur=45;let r=18+Math.sin(t*.01)*5;let gr=g.createRadialGradient(x,y,2,x,y,r+15);gr.addColorStop(0,'white');gr.addColorStop(.3,'#b9f7ff');gr.addColorStop(1,'#269fff');g.fillStyle=gr;g.beginPath();g.arc(x,y,r+12,0,Math.PI*2);g.fill();g.restore()}
+function bubble(text){g.fillStyle='rgba(4,10,24,.83)';g.fillRect(45,80,870,62);g.strokeStyle='#4f789e';g.lineWidth=2;g.strokeRect(45,80,870,62);g.fillStyle='#fff';g.font='bold 21px system-ui';g.textAlign='center';g.fillText(text,480,119)}
+function draw(now){let t=(now-start)%D;g.clearRect(0,0,960,540);background(t);
+let x=t<9000?140+t/9000*300:440;let powered=t>18000;
+if(t>7000&&t<22000)orb(625,365,now);
+hero(x,405,now,'#f6f8ff',powered,t>22500?1:0);
+if(t>15500){let sx=t<22000?800:760-(t-22000)*.015;hero(sx,405,now,'#ff9b91',false,2)}
+if(t>18000){g.save();g.strokeStyle='rgba(72,255,214,.75)';g.lineWidth=5;for(let i=0;i<12;i++){let a=i*Math.PI/6+t*.001;g.beginPath();g.moveTo(440,350);g.lineTo(440+Math.cos(a)*150,350+Math.sin(a)*150);g.stroke()}g.restore()}
+if(t>22500){for(let i=0;i<8;i++){g.fillStyle='rgba(255,190,90,.7)';g.beginPath();g.arc(550+Math.sin(now*.01+i)*80,300+Math.cos(now*.014+i)*65,4,0,7);g.fill()}}
+let sc=scenes.find(s=>t>=s[0]&&t<s[1]);g.fillStyle='#fff';g.font='bold 29px system-ui';g.textAlign='center';g.fillText(sc[2],480,54);bubble(sc[3]);
+g.fillStyle='#a9c7df';g.font='16px system-ui';g.fillText('STICKMAN STUDIO  •  EPISODE 01',480,510);
+let idx=scenes.indexOf(sc);if(idx!==lastLine){lastLine=idx;if(playing)speech(sc[3])}
+if(playing)requestAnimationFrame(draw)}
+function restart(){start=performance.now();playing=true;lastLine=-1;musicOn();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();$('play').textContent='Ⅱ Pause';requestAnimationFrame(draw);$('status').textContent='Episode restarted.'}
+$('play').onclick=()=>{if(playing){playing=false;$('play').textContent='▶ Play';if('speechSynthesis'in window)speechSynthesis.pause();$('status').textContent='Paused.'}else{playing=true;start=performance.now();lastLine=-1;if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();if('speechSynthesis'in window)speechSynthesis.resume();$('play').textContent='Ⅱ Pause';requestAnimationFrame(draw)}};
+$('restart').onclick=restart;
+$('record').onclick=async()=>{if(!c.captureStream||!window.MediaRecorder){$('status').textContent='Recording is unsupported here. Please try Chrome.';return}
+restart();if(audioCtx&&audioCtx.state==='suspended')await audioCtx.resume();let stream=c.captureStream(30);if(window.musicStream)window.musicStream.getAudioTracks().forEach(tr=>stream.addTrack(tr));
+chunks=[];let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';rec=new MediaRecorder(stream,{mimeType:mime});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{let blob=new Blob(chunks,{type:'video/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='stickman-episode-01-enhanced.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);$('status').textContent='Video saved. Background music is included; system narration may not be in the file.'};
+rec.start();$('record').disabled=true;$('stop').disabled=false;$('status').textContent='Recording full 30-second episode. Let it play, then Stop & save.'};
+$('stop').onclick=()=>{if(rec&&rec.state!=='inactive')rec.stop();$('record').disabled=false;$('stop').disabled=true};
+musicOn();if(audioCtx)audioCtx.suspend();requestAnimationFrame(draw);
+</script></body></html>
