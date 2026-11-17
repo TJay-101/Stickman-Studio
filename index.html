@@ -1,170 +1,25 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stickman Studio — The Wrong Button</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nova & Zip — Stickman Studio</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,Arial}*{box-sizing:border-box}body{margin:0;background:#080e19;color:#f4f7ff}header{padding:18px;background:#142238;border-bottom:1px solid #30415c}h1{margin:0;font-size:1.4rem}header p{margin:5px 0 0;color:#bdcbe0}.wrap{max-width:980px;margin:auto;padding:14px}.stage{border:1px solid #354966;border-radius:15px;overflow:hidden;background:#050914}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}.controls{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}button{border:0;border-radius:10px;padding:12px 14px;font-weight:750;background:#70e1bd;color:#071b17}button.alt{background:#293b57;color:white}button:disabled{opacity:.45}.panel{background:#142238;border:1px solid #30415c;border-radius:13px;padding:14px;margin:12px 0}.panel h2{font-size:1rem;margin:0 0 8px}.panel p{color:#c5d1e1;line-height:1.5;margin:5px 0}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0}label{color:#cbd7e6;font-size:.9rem}.status{color:#8debd0;min-height:1.5em;margin-top:8px}.script{background:#0b1729;border-radius:9px;padding:12px;line-height:1.6;color:#eff7ff}small{color:#9fb0c6}
+*{box-sizing:border-box}body{margin:0;background:#080e1d;color:#f7f8ff;font-family:system-ui,Arial}header{padding:16px 5%;background:#111f36;border-bottom:1px solid #344968}h1{margin:0;font-size:clamp(22px,4vw,34px)}header p{margin:4px 0;color:#a9bed8}.wrap{max-width:1100px;margin:auto;padding:16px}.screen{position:relative;overflow:hidden;border:1px solid #45617d;border-radius:18px;background:linear-gradient(#172c50 0%,#f5a27c 68%,#34404c 68%);aspect-ratio:16/9;min-height:280px}.sun{position:absolute;right:13%;top:9%;width:9%;aspect-ratio:1;border-radius:50%;background:#ffe9ac;box-shadow:0 0 50px #ffe9ac88}.city{position:absolute;bottom:28%;height:45%;width:100%;background:repeating-linear-gradient(90deg,#263957 0 7%,transparent 7% 9%),linear-gradient(transparent,#243653)}.ground{position:absolute;bottom:0;height:28%;width:100%;background:linear-gradient(#424b55,#202c3c);border-top:6px solid #e6b77c}.machine{position:absolute;left:51%;bottom:27%;width:15%;height:48%;background:linear-gradient(90deg,#25445e,#4d7892,#24425c);border:5px solid #b8d8e7;border-radius:16px;box-shadow:0 8px 15px #10182799}.machine:before{content:'SNACK-O-MATIC';position:absolute;top:7%;left:7%;width:86%;height:45%;border-radius:8px;background:linear-gradient(135deg,#10243a,#243e57);color:#fff;display:grid;place-items:center;font-weight:900;font-size:clamp(8px,1.2vw,16px);box-shadow:inset 0 0 0 2px #789cb0}.machine:after{content:'●';position:absolute;bottom:8%;left:40%;width:20%;aspect-ratio:1;border-radius:50%;background:#f04c60;color:#fff;text-align:center;line-height:1.6;font-size:clamp(12px,2vw,24px);box-shadow:0 0 15px #ff6677}.character{position:absolute;bottom:26%;width:21%;height:60%;display:flex;align-items:center;justify-content:center;animation:bob 2.8s ease-in-out infinite}.nova{left:17%}.zip{right:10%;animation-delay:-1.1s}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}.character svg{height:100%;width:100%;overflow:visible}.bubble{position:absolute;top:7%;left:50%;transform:translateX(-50%);width:max-content;max-width:80%;padding:12px 18px;border-radius:16px;background:#fff;color:#15243b;font-weight:750;font-size:clamp(12px,2vw,21px);box-shadow:0 5px 15px #1118;text-align:center}.bubble:after{content:'';position:absolute;bottom:-12px;left:48%;border-width:13px 10px 0;border-style:solid;border-color:#fff transparent transparent}.caption{position:absolute;bottom:4%;left:4%;right:4%;text-align:center;font-size:clamp(12px,2vw,21px);font-weight:900;text-shadow:0 2px 5px #000}.controls{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}button{border:0;border-radius:10px;padding:12px 18px;font-weight:800;background:#70e1bd;color:#081b19}button.secondary{background:#2b405e;color:white}.panel{background:#142238;border:1px solid #30415c;border-radius:13px;padding:14px;margin:12px 0}.panel p{color:#c5d1e1;line-height:1.5}.status{color:#8debd0;min-height:24px}label{display:block;margin:8px 0;color:#d4e1f1}select{padding:7px;border-radius:8px;background:#0b1729;color:white;border:1px solid #45617d}.logo{font-weight:900;letter-spacing:2px;color:#8debd0}
 </style></head><body>
-<header><h1>🎬 Stickman Studio</h1><p>Episode 01 — The Wrong Button · Comedy action edition</p></header>
-<main class="wrap">
-<div class="stage"><canvas id="scene" width="1280" height="720" aria-label="Comedy stickman animation"></canvas></div>
-<div class="controls"><button id="play">Ⅱ Play story</button><button id="restart" class="alt">↻ Restart</button><button id="preview" class="alt">🔊 Voice preview</button><button id="record">● Record with my voice</button><button id="stop" class="alt" disabled>■ Stop & save</button></div>
-<section class="panel"><h2>Episode dialogue</h2><div class="script" id="dialogue">NOVA: “Finally! I found the legendary power button.”<br>ZIP: “That is a vending machine.”<br>NOVA: “Same thing. Probably.”</div><div class="row"><label><input id="music" type="checkbox" checked> Background music</label><label><input id="tts" type="checkbox" checked> Device voice preview during playback</label></div><div class="row"><label>Nova voice <select id="novaVoice"><option value="">Loading voices…</option></select></label><label>Zip voice <select id="zipVoice"><option value="">Loading voices…</option></select></label><button id="testVoices" class="alt" type="button">Test both voices</button></div><small>Choose a different installed voice for each character. Nova speaks a little brighter and faster; Zip speaks lower and slower. The available voices depend on your device.</small><div class="status" id="status">Ready. Tap Play story.</div></section>
-<section class="panel"><h2>What's different now?</h2><p>The characters have visible faces, animated mouths, separate arm and leg joints, reactions and a snack that drops from the vending machine after Nova pays for it. This episode is a short comedy scene rather than just characters standing still.</p><p><b>Recording:</b> Tap Record with my voice, allow microphone access, and read the dialogue as it appears. Your voice and the music are mixed into the saved video. The browser's synthetic voice is only a preview and is not captured.</p></section>
-<small>Best tested in Chrome. Recording saves a WebM video to your Downloads folder.</small>
-</main>
+<header><h1>🎬 STICKMAN STUDIO</h1><p>Now featuring the new Nova & Zip cartoon look · Episode 01: The Wrong Button</p></header>
+<main class="wrap"><div class="screen">
+<div class="sun"></div><div class="city"></div><div class="ground"></div><div class="machine"></div>
+<div class="character nova"><svg viewBox="0 0 220 400" role="img" aria-label="Nova cartoon character"><defs><linearGradient id="hood" x2="1" y2="1"><stop stop-color="#252b3c"/><stop offset="1" stop-color="#080d18"/></linearGradient></defs><path d="M70 200 L47 330 L35 382 L84 382 L108 286 L135 382 L181 382 L151 210Z" fill="#151d2e" stroke="#080d18" stroke-width="8"/><path d="M63 180 Q35 196 25 255 L50 273 L76 226 L86 294 L145 294 L157 226 L180 265 L201 246 Q184 187 150 177Z" fill="url(#hood)" stroke="#080d18" stroke-width="8"/><path d="M70 185 Q110 160 150 185 L145 270 L80 270Z" fill="#252d40"/><path d="M78 65 Q110 20 150 65 L168 142 Q157 191 112 196 Q66 190 55 143Z" fill="#8d543d" stroke="#151d2e" stroke-width="8"/><path d="M55 90 Q62 24 125 34 Q165 30 174 92 L153 76 L139 58 Q111 91 67 86Z" fill="#111725"/><path d="M75 123 Q91 111 103 123 M122 123 Q138 111 151 123" fill="none" stroke="#201923" stroke-width="7" stroke-linecap="round"/><ellipse cx="91" cy="137" rx="8" ry="11" fill="white"/><ellipse cx="136" cy="137" rx="8" ry="11" fill="white"/><circle cx="94" cy="139" r="4" fill="#172238"/><circle cx="139" cy="139" r="4" fill="#172238"/><path d="M103 165 Q116 179 132 164" fill="none" stroke="#4b2020" stroke-width="6" stroke-linecap="round"/><path d="M82 218 L137 218" stroke="#e33e4f" stroke-width="7"/><text x="110" y="250" text-anchor="middle" fill="#f4f7ff" font-size="19" font-weight="900">NOVA</text><path d="M60 204 L23 278 L9 265 M153 204 L190 267 L206 245" fill="none" stroke="#151d2e" stroke-width="22" stroke-linecap="round"/></svg></div>
+<div class="character zip"><svg viewBox="0 0 220 400" role="img" aria-label="Zip cartoon character"><path d="M69 198 L47 330 L35 382 L84 382 L108 286 L135 382 L181 382 L151 210Z" fill="#263d62" stroke="#111a2a" stroke-width="8"/><path d="M63 180 Q35 196 25 255 L50 273 L76 226 L86 294 L145 294 L157 226 L180 265 L201 246 Q184 187 150 177Z" fill="#edf3f8" stroke="#263d62" stroke-width="8"/><path d="M78 65 Q110 20 150 65 L168 142 Q157 191 112 196 Q66 190 55 143Z" fill="#a9674c" stroke="#263d62" stroke-width="8"/><path d="M55 90 Q62 24 125 34 Q165 30 174 92 L153 76 L139 58 Q111 91 67 86Z" fill="#151725"/><path d="M45 120 Q35 64 65 55 M175 120 Q185 64 155 55" fill="none" stroke="#53d7ee" stroke-width="8"/><path d="M75 123 Q91 111 103 123 M122 123 Q138 111 151 123" fill="none" stroke="#201923" stroke-width="7" stroke-linecap="round"/><ellipse cx="91" cy="137" rx="8" ry="11" fill="white"/><ellipse cx="136" cy="137" rx="8" ry="11" fill="white"/><circle cx="91" cy="137" r="4" fill="#172238"/><circle cx="136" cy="137" r="4" fill="#172238"/><path d="M101 166 Q116 155 132 166" fill="none" stroke="#4b2020" stroke-width="6" stroke-linecap="round"/><path d="M82 218 L137 218" stroke="#53d7ee" stroke-width="7"/><text x="110" y="250" text-anchor="middle" fill="#263d62" font-size="19" font-weight="900">ZIP</text><path d="M60 204 L23 278 L9 265 M153 204 L190 267 L206 245" fill="none" stroke="#edf3f8" stroke-width="22" stroke-linecap="round"/></svg></div>
+<div class="bubble" id="bubble">Nova: Finally! A snack!</div><div class="caption" id="caption">A HERO IS BORN… probably.</div>
+</div>
+<div class="controls"><button id="play">▶ Play episode</button><button class="secondary" id="restart">↻ Restart</button><button class="secondary" id="voice">🔊 Test voices</button></div>
+<section class="panel"><h2>Character voices</h2><label>Nova voice <select id="nv"></select></label><label>Zip voice <select id="zv"></select></label><p>Choose separate voices available on your device. Nova speaks brighter and quicker; Zip speaks lower and calmer.</p><div class="status" id="status">New cartoon studio preview loaded.</div></section>
+<section class="panel"><h2>Our next production upgrade</h2><p>This is the new character-design direction now placed in the GitHub studio. Next we'll build fuller motion, hand/object interaction, synchronized dialogue and scene changes. This page is a browser preview, not the finished episode yet.</p><p class="logo">NOVA & ZIP · STICKMAN STUDIO</p></section></main>
 <script>
-const c=document.getElementById('scene'),g=c.getContext('2d'),$=id=>document.getElementById(id);
-const W=1280,H=720,D=44000;
-let start=performance.now(),playing=true,raf=0,rec=null,chunks=[],audio=null,musicGain=null,musicTimer=null,lastScene=-1,mic=null;
-const beats=[
-{a:0,b:5000,who:'NOVA',line:'Finally! I found the legendary power button.',caption:'A HERO IS BORN… probably.',pose:'strut'},
-{a:5000,b:9500,who:'ZIP',line:'That is a vending machine.',caption:'His best friend has concerns.',pose:'look'},
-{a:9500,b:14000,who:'NOVA',line:'Same thing. Probably.',caption:'Confidence: 100%. Knowledge: 0%.',pose:'press'},
-{a:14000,b:18500,who:'ZIP',line:'Please do not press the big red button.',caption:'A very reasonable warning.',pose:'warn'},
-{a:18500,b:23500,who:'NOVA',line:'I heard “press the big red button.”',caption:'He did not hear that.',pose:'press'},
-{a:23500,b:29000,who:'ZIP',line:'You pressed it! It charged you for a snack!',caption:'THE MACHINE TAKES PAYMENT…',pose:'panic'},
-{a:29000,b:35000,who:'NOVA',line:'Wait… I paid for that snack?',caption:'A VERY EXPENSIVE SURPRISE.',pose:'spin'},
-{a:35000,b:40000,who:'ZIP',line:'Yes! The snack is right there!',caption:'CASE CLOSED.',pose:'laugh'},
-{a:40000,b:44000,who:'NOVA',line:'So… where is my change?',caption:'TO BE CONTINUED…',pose:'shrug'},
-
-];
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),ease=v=>{v=clamp(v,0,1);return v*v*(3-2*v)};
-function rounded(x,y,w,h,r,fill,stroke){g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=3;g.stroke()}}
-function line(x,y,X,Y,w=12,col){g.strokeStyle=col;g.lineWidth=w;g.lineCap='round';g.lineJoin='round';g.beginPath();g.moveTo(x,y);g.lineTo(X,Y);g.stroke()}
-function limb(points,col,width=13){for(let i=0;i<points.length-1;i++)line(points[i][0],points[i][1],points[i+1][0],points[i+1][1],width,col);for(let i=1;i<points.length-1;i++){g.fillStyle=col;g.beginPath();g.arc(points[i][0],points[i][1],width*.48,0,Math.PI*2);g.fill()}}
-function person(x,ground,t,opt={}){
-const col=opt.col||'#f5f7ff',scale=opt.scale||1,act=opt.act||'idle',talk=!!opt.talk,face=opt.face||'normal',jump=opt.jump||0;
-const nova=col==='#f4f7ff',ink='#142238',accent=nova?'#48d7c0':'#4269a8';
-g.save();g.translate(x,ground-jump);g.scale(scale,scale);
-const moving=act==='walk'||act==='run',step=moving?Math.sin(t*(act==='run'?.025:.012)):0;
-let bob=act==='walk'?Math.abs(step)*7:act==='run'?Math.abs(step)*13:act==='laugh'?Math.sin(t*.018)*2:0;
-let lean=act==='fall'?.8:act==='stumble'?-.25:0;
-g.translate(0,-bob);g.rotate(lean);
-const headY=-172,shoulderY=-126,hipY=-55,blink=(t%4100>3930),eyeY=headY-7;
-g.lineCap='round';g.lineJoin='round';
-let legA=act==='fall'?-.8:step*.48,legB=act==='fall'?.8:-step*.48;
-limb([[0,hipY],[-15+legA*22,-18],[-20+legA*40,20]],col,14);
-limb([[0,hipY],[15+legB*22,-18],[20+legB*40,20]],col,14);
-line(-20+legA*40,20,-2+legA*40,20,15,ink);line(-20+legA*40,17,-2+legA*40,17,9,accent);
-line(20+legB*40,20,38+legB*40,20,15,ink);line(20+legB*40,17,38+legB*40,17,9,accent);
-line(0,shoulderY,0,hipY,23,ink);line(0,shoulderY,0,hipY,16,col);
-line(-8,-116,0,-106,4,accent);line(8,-116,0,-106,4,accent);
-g.fillStyle=accent;g.beginPath();g.roundRect(-5,-99,10,8,3);g.fill();
-let arm1,arm2;
-if(act==='press'){arm1=[[-2,-120],[-27,-100],[-45,-80]];arm2=[[2,-120],[55,-125],[105,-135]]}
-else if(act==='warn'){arm1=[[-2,-120],[-42,-145],[-60,-178]];arm2=[[2,-120],[35,-95],[55,-85]]}
-else if(act==='laugh'){arm1=[[-2,-120],[-35,-145],[-45,-175]];arm2=[[2,-120],[35,-145],[45,-175]]}
-else if(act==='panic'||act==='stumble'){arm1=[[-2,-120],[-38,-155],[-58,-185]];arm2=[[2,-120],[42,-155],[62,-185]]}
-else if(act==='fall'){arm1=[[-2,-120],[-38,-115],[-65,-95]];arm2=[[2,-120],[38,-145],[65,-165]]}
-else if(act==='shrug'){arm1=[[-2,-120],[-38,-150],[-65,-145]];arm2=[[2,-120],[38,-150],[65,-145]]}
-else if(act==='talk'){arm1=[[-2,-120],[-28,-100],[-35,-78]];arm2=[[2,-120],[28,-100],[35,-78]]}
-else{arm1=[[-2,-120],[-32,-96+step*18],[-42,-68+step*24]];arm2=[[2,-120],[32,-96-step*18],[42,-68-step*24]]}
-limb(arm1,col,12);limb(arm2,col,12);
-for(const p of [arm1[2],arm2[2]]){g.fillStyle=col;g.beginPath();g.arc(p[0],p[1],8,0,Math.PI*2);g.fill()}
-if(act==='press'){line(125,30,135,33,5,col);g.fillStyle='#ffe45e';g.beginPath();g.arc(125,30,13,0,Math.PI*2);g.fill();g.strokeStyle='#fff4b0';g.lineWidth=4;g.stroke()}
-g.fillStyle=col;g.strokeStyle=ink;g.lineWidth=4;g.beginPath();g.arc(0,headY,43,0,Math.PI*2);g.fill();g.stroke();
-if(nova){g.strokeStyle=accent;g.lineWidth=7;g.beginPath();g.moveTo(-19,headY-37);g.lineTo(-8,headY-49);g.lineTo(1,headY-39);g.stroke()}
-else{g.strokeStyle=accent;g.lineWidth=7;g.beginPath();g.arc(0,headY-2,48,Math.PI*1.08,Math.PI*1.9);g.stroke();g.fillStyle=accent;g.beginPath();g.arc(37,headY-22,7,0,Math.PI*2);g.fill()}
-if(blink){g.strokeStyle=ink;g.lineWidth=4;g.beginPath();g.moveTo(-25,eyeY);g.lineTo(-8,eyeY);g.moveTo(8,eyeY);g.lineTo(25,eyeY);g.stroke()}
-else{g.fillStyle='#fff';g.beginPath();g.ellipse(-16,eyeY,10,13,0,0,Math.PI*2);g.ellipse(16,eyeY,10,13,0,0,Math.PI*2);g.fill();g.fillStyle=ink;let look=act==='press'?4:act==='talk'?3:0;g.beginPath();g.arc(-14+look,eyeY+1,5,0,Math.PI*2);g.arc(18+look,eyeY+1,5,0,Math.PI*2);g.fill()}
-g.strokeStyle=ink;g.lineWidth=4;g.beginPath();
-if(face==='angry'){g.moveTo(-28,headY-26);g.lineTo(-8,headY-17);g.moveTo(8,headY-17);g.lineTo(28,headY-26)}
-else if(face==='shock'){g.moveTo(-27,headY-25);g.lineTo(-8,headY-30);g.moveTo(8,headY-30);g.lineTo(27,headY-25)}
-else{g.moveTo(-26,headY-25);g.quadraticCurveTo(-16,headY-30,-7,headY-24);g.moveTo(7,headY-24);g.quadraticCurveTo(16,headY-30,26,headY-25)}g.stroke();
-g.fillStyle=ink;g.beginPath();g.arc(0,headY+7,2.5,0,Math.PI*2);g.fill();
-if(talk){let syllable=Math.abs(Math.sin(t*.038)+.38*Math.sin(t*.071));let opening=2+syllable*15;g.fillStyle=ink;g.beginPath();g.ellipse(0,headY+23,5+opening*.38,opening,0,0,Math.PI*2);g.fill();g.fillStyle='#ff8d9a';g.beginPath();g.ellipse(0,headY+27+opening*.12,4+syllable*2,2+syllable*2,0,0,Math.PI*2);g.fill()}
-else if(face==='shock'){g.fillStyle=ink;g.beginPath();g.ellipse(0,headY+23,8,12,0,0,Math.PI*2);g.fill()}
-else{g.strokeStyle=ink;g.beginPath();if(face==='angry'){g.moveTo(-11,headY+25);g.lineTo(11,headY+25)}else{g.arc(0,headY+16,face==='smile'?17:11,.15,Math.PI-.15)}g.stroke()}
-g.restore();
-}
-function city(){
-let sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#17284b');sky.addColorStop(1,'#f08b70');g.fillStyle=sky;g.fillRect(0,0,W,H);
-g.fillStyle='#fff1bd';g.beginPath();g.arc(1060,135,58,0,7);g.fill();
-for(let i=0;i<11;i++){let x=i*125-20,h=170+(i*83)%210;g.fillStyle=i%2?'#283b60':'#1e3150';g.fillRect(x,510-h,95,h);for(let j=0;j<4;j++)for(let k=0;k<h/38;k++){g.fillStyle=(j+k)%2?'#ffd58a':'#86c9dc';g.fillRect(x+15+j*19,525-h+k*34,8,12)}}
-g.fillStyle='#28313c';g.fillRect(0,520,W,200);g.fillStyle='#e6ba76';g.fillRect(0,520,W,7);
-}
-function vending(x,y,t,shake=false){
-g.save();g.translate(x,y);if(shake)g.rotate(Math.sin(t*.08)*.08);
-rounded(-82,-230,164,230,17,'#31566f','#b7d9e5');rounded(-65,-210,130,105,9,'#102337','#6f9cb1');
-for(let i=0;i<3;i++){g.fillStyle=['#f76f72','#f5c65e','#6ce0b3'][i];g.beginPath();g.arc(-35+i*35,-175,12,0,7);g.fill()}
-rounded(-58,-88,116,95,8,'#162b40','#5c8499');g.fillStyle='#e6f4ff';g.font='bold 18px system-ui';g.textAlign='center';g.fillText('SNACK-O-MATIC',0,-115);
-rounded(-30,20,60,28,5,'#101b29','#93aebd');g.fillStyle='#ff4e5f';g.beginPath();g.arc(0,34,13,0,7);g.fill();g.fillStyle='#fff';g.font='bold 11px system-ui';g.fillText('PUSH',0,63);
-g.restore()}
-function speechBubble(name,text,x,y,t){
-g.font='bold 23px system-ui';let lines=text.length>45?[text.slice(0,44),text.slice(44)]:[text];let w=Math.min(670,Math.max(330,...lines.map(v=>g.measureText(v).width+50))),h=lines.length*34+38;
-rounded(x-w/2,y-h,w,h,20,'#fff','#1b2940');g.fillStyle='#192a42';g.textAlign='left';g.font='bold 16px system-ui';g.fillText(name,x-w/2+20,y-h+24);
-g.font='bold 22px system-ui';lines.forEach((v,i)=>g.fillText(v,x-w/2+20,y-h+55+i*32));
-g.fillStyle='#fff';g.beginPath();g.moveTo(x-14,y);g.lineTo(x+10,y);g.lineTo(x,y+20);g.fill();
-}
-function draw(now){
-if(!playing)return;let t=(now-start)%D,b=beats.find(v=>t>=v.a&&t<v.b),idx=beats.indexOf(b),local=t-b.a;city();
-// Cinematic camera: gentle push-ins, reaction pans and a brief impact shake.
-let zoom=idx===2||idx===4?1.07:idx===5?1.12:idx===6?1.09:idx===7?1.04:1;
-let panX=idx===0?-35:idx===1?28:idx===4?18:idx===5?-15:idx===6?Math.sin(now*.025)*12:0;
-let shake=idx===5&&local>1200?Math.sin(now*.09)*5:idx===6?Math.sin(now*.055)*3:0;
-g.save();g.translate(W/2+panX+shake,H/2);g.scale(zoom,zoom);g.translate(-W/2,-H/2);
-let novaX=idx===0?250:idx<5?525:idx<6?420:idx===6?520:480,zipX=idx<5?875:idx<6?900:800;
-vending(650,520,now,idx===6);
-let na='idle',za='idle',nf='normal',zf='normal',nj=0;
-if(idx===0){na='walk';nf='smile';novaX=120+ease(local/5000)*390}
-if(idx===1){na='talk';nf='shock';za='talk';zf='sleepy'}
-if(idx===2){na='press';nf='smile';novaX=525}
-if(idx===3){za='warn';zf='angry';na='talk';nf='normal'}
-if(idx===4){na='press';nf='smile';novaX=525;if(local>3000)nj=12}
-if(idx===5){na='panic';nf='shock';za='panic';zf='shock'}
-if(idx===6){na=local>3600?'fall':'stumble';nf='shock';za='run';zf='shock';novaX=500+Math.sin(local*.02)*45;zipX=850-ease(local/6000)*260}
-if(idx===7){na='talk';nf='smile';za='laugh';zf='smile'}
-if(idx===8){na='shrug';nf='sleepy';za='talk';zf='normal'}
-person(novaX,520,now,{col:'#f4f7ff',act:na,face:nf,talk:b.who==='NOVA'&&local<(b.b-b.a-250),jump:nj});
-person(zipX,520,now,{col:'#ffb2a6',act:za,face:zf,talk:b.who==='ZIP'&&local<(b.b-b.a-250),scale:.96});
-if(idx===4&&local>3000){let pulse=1+Math.sin(local*.025)*.18;g.strokeStyle='#ff5268';g.lineWidth=8;g.beginPath();g.arc(650,555,42*pulse,0,Math.PI*2);g.stroke();g.save();g.translate(650,280);g.rotate(Math.sin(now*.04)*.3);g.fillStyle='#ff525f';g.font='bold 70px system-ui';g.textAlign='center';g.fillText('!',0,0);g.restore()}
-if(idx===5){g.fillStyle='#ffe56d';g.font='bold 80px system-ui';g.textAlign='center';g.fillText('KA-CHING!',650,250)}
-if(idx>=5){g.save();g.translate(650,470);g.rotate(-.12);rounded(-24,-18,48,38,7,'#ffd45c','#7a4a24');g.fillStyle='#7a4a24';g.font='bold 13px system-ui';g.textAlign='center';g.fillText('SNACK',0,6);g.restore()}
-if(idx===6){for(let i=0;i<10;i++){g.fillStyle=['#ffdc69','#ff8d79','#7fe5d0'][i%3];g.beginPath();g.arc(350+(i*83+now*.12)%600,330+Math.sin(now*.01+i)*100,7,0,7);g.fill()}}
-g.textAlign='center';g.fillStyle='#fff';g.font='bold 31px system-ui';g.shadowColor='#000';g.shadowBlur=8;g.fillText(b.caption,640,64);g.shadowBlur=0;
-speechBubble(b.who,b.line,b.who==='NOVA'?novaX:zipX,idx===6?245:230,now);
-g.restore();
-g.fillStyle='rgba(0,0,0,.42)';g.fillRect(0,665,W,55);g.fillStyle='#d7f9ef';g.font='bold 18px system-ui';g.fillText('STICKMAN STUDIO  •  THE WRONG BUTTON',640,700);
-$('dialogue').innerHTML='<b>'+b.who+':</b> “'+b.line+'”<br><span style="color:#b8c8dc">'+b.caption+'</span>';
-if(idx!==lastScene){lastScene=idx;if($('tts').checked&&!window.isRecording) speak(b.line,b.who)}
-raf=requestAnimationFrame(draw);
-}
-let availableVoices=[];
-function loadVoices(){
-if(!('speechSynthesis'in window))return;
-availableVoices=speechSynthesis.getVoices();
-const english=availableVoices.map((v,i)=>({v,i})).filter(x=>/^en/i.test(x.v.lang));
-['novaVoice','zipVoice'].forEach((id,idx)=>{
- const el=$(id);if(!el)return;
- const prior=el.value;el.innerHTML='';
- availableVoices.forEach((v,i)=>{let o=document.createElement('option');o.value=String(i);o.textContent=v.name+' ('+v.lang+')';el.appendChild(o)});
- if(availableVoices.length){
-   const preferred=idx===0?(english[0]?.i??0):(english.find(x=>x.i!==(english[0]?.i??0))?.i??(availableVoices.length>1?1:0));
-   el.value=prior!==''&&Number(prior)<availableVoices.length?prior:String(preferred);
- }else el.innerHTML='<option value="">No device voices found</option>';
-});
-}
-if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-function speak(txt,speaker='NOVA'){
-if(!('speechSynthesis'in window))return;
-speechSynthesis.cancel();
-const u=new SpeechSynthesisUtterance(txt);
-const sel=$(speaker==='ZIP'?'zipVoice':'novaVoice');
-const v=availableVoices[Number(sel?.value)];
-if(v)u.voice=v;
-if(speaker==='ZIP'){u.rate=.91;u.pitch=.78;u.volume=1}
-else{u.rate=1.04;u.pitch=1.22;u.volume=1}
-speechSynthesis.speak(u);
-}
-function startMusic(){if(audio)return;let AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audio=new AC();musicGain=audio.createGain();musicGain.gain.value=$('music').checked?.075:0;musicGain.connect(audio.destination);let out=audio.createMediaStreamDestination();musicGain.connect(out);window.musicTrack=out.stream;let n=[196,246.94,293.66,246.94,164.81,196,246.94,146.83],i=0;
-musicTimer=setInterval(()=>{let t=audio.currentTime;[n[i++%n.length],82.41].forEach((f,j)=>{let o=audio.createOscillator(),e=audio.createGain();o.type=j?'sine':'triangle';o.frequency.value=f;e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(j?.12:.2,t+.035);e.gain.exponentialRampToValueAtTime(.0001,t+(j?.22:.28));o.connect(e);e.connect(musicGain);o.start(t);o.stop(t+(j?.23:.29))})},330)}
-$('music').onchange=()=>{if(musicGain)musicGain.gain.setTargetAtTime($('music').checked?.075:0,audio.currentTime,.1)};
-function restart(){cancelAnimationFrame(raf);start=performance.now();playing=true;lastScene=-1;startMusic();if(audio?.state==='suspended')audio.resume();$('play').textContent='Ⅱ Pause';draw(performance.now());$('status').textContent='Story restarted.'}
-$('play').onclick=()=>{if(playing){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play story';if('speechSynthesis'in window)speechSynthesis.cancel()}else{playing=true;start=performance.now();lastScene=-1;if(audio?.state==='suspended')audio.resume();$('play').textContent='Ⅱ Pause';draw(performance.now())}};
-$('restart').onclick=restart;
-$('preview').onclick=()=>{let i=0;const next=()=>{if(i>=beats.length)return;let b=beats[i++];speak(b.line,b.who);let ms=Math.max(1900,b.line.length*65);window.voicePreviewTimer=setTimeout(next,ms)};clearTimeout(window.voicePreviewTimer);next();$('status').textContent='Previewing dialogue with separate Nova and Zip voices.'};
-$('testVoices').onclick=()=>{speak('Hello! I am Nova. Ready for an adventure?','NOVA');setTimeout(()=>speak('And I am Zip. Please think before pressing buttons.','ZIP'),2600)};
-$('record').onclick=async()=>{if(!c.captureStream||!window.MediaRecorder){$('status').textContent='Recording is not supported. Try Chrome.';return}
-try{startMusic();await audio.resume();mic=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});let dest=audio.createMediaStreamDestination(),ms=audio.createMediaStreamSource(mic);ms.connect(dest);musicGain.connect(dest);window.isRecording=true;if('speechSynthesis'in window)speechSynthesis.cancel();restart();let stream=c.captureStream(30);dest.stream.getAudioTracks().forEach(tr=>stream.addTrack(tr));let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';chunks=[];rec=new MediaRecorder(stream,{mimeType:mime});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{let blob=new Blob(chunks,{type:'video/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='stickman-the-wrong-button.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);mic?.getTracks().forEach(x=>x.stop());window.isRecording=false;$('status').textContent='Saved! Your microphone voice and background music are included.'};rec.start(1000);$('record').disabled=true;$('stop').disabled=false;$('status').textContent='Recording. Read the dialogue aloud as it appears. The episode is 44 seconds.'}catch(e){mic?.getTracks().forEach(x=>x.stop());$('status').textContent='Could not start microphone recording. Allow microphone access and try again.'}};
-$('stop').onclick=()=>{if(rec&&rec.state!=='inactive')rec.stop();$('record').disabled=false;$('stop').disabled=true};
-startMusic();if(audio)audio.suspend();draw(performance.now());
+const lines=[['NOVA','Finally! A snack!','A HERO IS BORN… probably.'],['ZIP','You bought a snack… for the vending machine?','His best friend has questions.'],['NOVA','No! I pressed the button and it took my money!','THE MACHINE HAS STRUCK.'],['ZIP','Then why does the screen say thank you?','A fair question.'],['NOVA','Because it has manners. Unlike some people.','Nova has a point. Maybe.'],['ZIP','That is the machine thanking you for paying.','THE TRUTH REVEALED.'],['NOVA','Well, you are welcome, machine.','He is still talking to it.'],['ZIP','You just thanked a vending machine.','TO BE CONTINUED…']];
+let voices=[];function load(){voices=speechSynthesis.getVoices();for(const id of ['nv','zv']){let s=document.getElementById(id),old=s.value;s.innerHTML='';voices.forEach((v,i)=>{let o=document.createElement('option');o.value=i;o.textContent=v.name+' ('+v.lang+')';s.append(o)});if(voices.length)s.value=old||String(id==='nv'?0:Math.min(1,voices.length-1))}}load();speechSynthesis.onvoiceschanged=load;
+function say(who,text){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text),v=voices[Number(document.getElementById(who==='NOVA'?'nv':'zv').value)];if(v)u.voice=v;u.rate=who==='NOVA'?1.06:.92;u.pitch=who==='NOVA'?1.2:.82;speechSynthesis.speak(u)}
+let i=0,timer=null,playing=false;function step(){if(i>=lines.length){playing=false;document.getElementById('status').textContent='Scene complete. Tap restart to watch again.';return}let [who,text,cap]=lines[i++];document.getElementById('bubble').textContent=who+': '+text;document.getElementById('caption').textContent=cap;say(who,text);timer=setTimeout(step,Math.max(2800,text.length*78)+450)}
+function stop(){clearTimeout(timer);speechSynthesis.cancel();playing=false}
+document.getElementById('play').onclick=()=>{if(playing){stop();document.getElementById('status').textContent='Paused.'}else{playing=true;step();document.getElementById('status').textContent='Playing the Nova and Zip dialogue.'}};
+document.getElementById('restart').onclick=()=>{stop();i=0;playing=true;step();document.getElementById('status').textContent='Restarted.'};
+document.getElementById('voice').onclick=()=>{say('NOVA','Hello! I am Nova. Ready for an adventure?');setTimeout(()=>say('ZIP','And I am Zip. Please think before pressing buttons.'),2600)};
 </script></body></html>
