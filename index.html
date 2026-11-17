@@ -97,6 +97,11 @@ g.fillStyle='#fff';g.beginPath();g.moveTo(x-14,y);g.lineTo(x+10,y);g.lineTo(x,y+
 }
 function draw(now){
 if(!playing)return;let t=(now-start)%D,b=beats.find(v=>t>=v.a&&t<v.b),idx=beats.indexOf(b),local=t-b.a;city();
+// Cinematic camera: gentle push-ins, reaction pans and a brief impact shake.
+let zoom=idx===2||idx===4?1.07:idx===5?1.12:idx===6?1.09:idx===7?1.04:1;
+let panX=idx===0?-35:idx===1?28:idx===4?18:idx===5?-15:idx===6?Math.sin(now*.025)*12:0;
+let shake=idx===5&&local>1200?Math.sin(now*.09)*5:idx===6?Math.sin(now*.055)*3:0;
+g.save();g.translate(W/2+panX+shake,H/2);g.scale(zoom,zoom);g.translate(-W/2,-H/2);
 let novaX=idx<3?250:idx<6?420:idx===6?520:480,zipX=idx<3?870:idx<6?900:800;
 vending(650,520,now,idx===6);
 let na='idle',za='idle',nf='normal',zf='normal',nj=0;
@@ -106,16 +111,17 @@ if(idx===2){na='press';nf='smile'}
 if(idx===3){za='warn';zf='angry';na='idle';nf='normal'}
 if(idx===4){na='press';nf='smile';if(local>3000)nj=25}
 if(idx===5){na='panic';nf='shock';za='panic';zf='shock'}
-if(idx===6){na='stumble';nf='shock';za='run';zf='shock';novaX=500+Math.sin(local*.02)*45;zipX=850-ease(local/6000)*260}
+if(idx===6){na=local>3600?'fall':'stumble';nf='shock';za='run';zf='shock';novaX=500+Math.sin(local*.02)*45;zipX=850-ease(local/6000)*260}
 if(idx===7){na='laugh';nf='smile';za='laugh';zf='smile'}
 if(idx===8){na='shrug';nf='sleepy';za='idle';zf='normal'}
-person(novaX,520,now,{col:'#f4f7ff',act:na,face:nf,talk:b.who==='NOVA'&&local<4000,jump:nj});
-person(zipX,520,now,{col:'#ffb2a6',act:za,face:zf,talk:b.who==='ZIP'&&local<4000,scale:.96});
-if(idx===4&&local>3000){g.save();g.translate(650,280);g.rotate(Math.sin(now*.04)*.3);g.fillStyle='#ff525f';g.font='bold 70px system-ui';g.textAlign='center';g.fillText('!',0,0);g.restore()}
+person(novaX,520,now,{col:'#f4f7ff',act:na,face:nf,talk:b.who==='NOVA'&&local<(b.b-b.a-250),jump:nj});
+person(zipX,520,now,{col:'#ffb2a6',act:za,face:zf,talk:b.who==='ZIP'&&local<(b.b-b.a-250),scale:.96});
+if(idx===4&&local>3000){let pulse=1+Math.sin(local*.025)*.18;g.strokeStyle='#ff5268';g.lineWidth=8;g.beginPath();g.arc(650,555,42*pulse,0,Math.PI*2);g.stroke();g.save();g.translate(650,280);g.rotate(Math.sin(now*.04)*.3);g.fillStyle='#ff525f';g.font='bold 70px system-ui';g.textAlign='center';g.fillText('!',0,0);g.restore()}
 if(idx===5){g.fillStyle='#ffe56d';g.font='bold 80px system-ui';g.textAlign='center';g.fillText('BOOOING!',650,250)}
 if(idx===6){for(let i=0;i<10;i++){g.fillStyle=['#ffdc69','#ff8d79','#7fe5d0'][i%3];g.beginPath();g.arc(350+(i*83+now*.12)%600,330+Math.sin(now*.01+i)*100,7,0,7);g.fill()}}
 g.textAlign='center';g.fillStyle='#fff';g.font='bold 31px system-ui';g.shadowColor='#000';g.shadowBlur=8;g.fillText(b.caption,640,64);g.shadowBlur=0;
 speechBubble(b.who,b.line,b.who==='NOVA'?novaX:zipX,idx===6?245:230,now);
+g.restore();
 g.fillStyle='rgba(0,0,0,.42)';g.fillRect(0,665,W,55);g.fillStyle='#d7f9ef';g.font='bold 18px system-ui';g.fillText('STICKMAN STUDIO  •  THE WRONG BUTTON',640,700);
 $('dialogue').innerHTML='<b>'+b.who+':</b> “'+b.line+'”<br><span style="color:#b8c8dc">'+b.caption+'</span>';
 if(idx!==lastScene){lastScene=idx;if($('tts').checked&&!window.isRecording) speak(b.who+'. '+b.line)}
