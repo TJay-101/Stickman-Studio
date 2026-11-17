@@ -7,8 +7,8 @@
 <main class="wrap">
 <div class="stage"><canvas id="scene" width="1280" height="720" aria-label="Comedy stickman animation"></canvas></div>
 <div class="controls"><button id="play">Ⅱ Play story</button><button id="restart" class="alt">↻ Restart</button><button id="preview" class="alt">🔊 Voice preview</button><button id="record">● Record with my voice</button><button id="stop" class="alt" disabled>■ Stop & save</button></div>
-<section class="panel"><h2>Episode dialogue</h2><div class="script" id="dialogue">NOVA: “Finally! I found the legendary power button.”<br>ZIP: “That is a vending machine.”<br>NOVA: “Same thing. Probably.”</div><div class="row"><label><input id="music" type="checkbox" checked> Background music</label><label><input id="tts" type="checkbox" checked> Device voice preview during playback</label></div><div class="row"><label>Nova voice <select id="novaVoice"><option value="">Loading voices…</option></select></label><label>Zip voice <select id="zipVoice"><option value="">Loading voices…</option></select></label><button id="testVoices" class="alt" type="button">Test both voices</button></div><small>Choose two different voices from the voices available on your device. Chrome/Android voice options vary.</small><div class="status" id="status">Ready. Tap Play story.</div></section>
-<section class="panel"><h2>What's different now?</h2><p>The characters have visible faces and mouths that move while they speak, separate arm and leg joints, proper walk/run cycles, reactions, falls, jumps, and timed comedy. This episode is a short comedy scene rather than just characters standing still.</p><p><b>Recording:</b> Tap Record with my voice, allow microphone access, and read the dialogue as it appears. Your voice and the music are mixed into the saved video. The browser's synthetic voice is only a preview and is not captured.</p></section>
+<section class="panel"><h2>Episode dialogue</h2><div class="script" id="dialogue">NOVA: “Finally! I found the legendary power button.”<br>ZIP: “That is a vending machine.”<br>NOVA: “Same thing. Probably.”</div><div class="row"><label><input id="music" type="checkbox" checked> Background music</label><label><input id="tts" type="checkbox" checked> Device voice preview during playback</label></div><div class="row"><label>Nova voice <select id="novaVoice"><option value="">Loading voices…</option></select></label><label>Zip voice <select id="zipVoice"><option value="">Loading voices…</option></select></label><button id="testVoices" class="alt" type="button">Test both voices</button></div><small>Choose a different installed voice for each character. Nova speaks a little brighter and faster; Zip speaks lower and slower. The available voices depend on your device.</small><div class="status" id="status">Ready. Tap Play story.</div></section>
+<section class="panel"><h2>What's different now?</h2><p>The characters have visible faces, animated mouths, separate arm and leg joints, reactions and a snack that drops from the vending machine after Nova pays for it. This episode is a short comedy scene rather than just characters standing still.</p><p><b>Recording:</b> Tap Record with my voice, allow microphone access, and read the dialogue as it appears. Your voice and the music are mixed into the saved video. The browser's synthetic voice is only a preview and is not captured.</p></section>
 <small>Best tested in Chrome. Recording saves a WebM video to your Downloads folder.</small>
 </main>
 <script>
@@ -21,10 +21,11 @@ const beats=[
 {a:9500,b:14000,who:'NOVA',line:'Same thing. Probably.',caption:'Confidence: 100%. Knowledge: 0%.',pose:'press'},
 {a:14000,b:18500,who:'ZIP',line:'Please do not press the big red button.',caption:'A very reasonable warning.',pose:'warn'},
 {a:18500,b:23500,who:'NOVA',line:'I heard “press the big red button.”',caption:'He did not hear that.',pose:'press'},
-{a:23500,b:29000,who:'ZIP',line:'That is not what I said!',caption:'THE BUTTON HAS BEEN PRESSED.',pose:'panic'},
-{a:29000,b:35000,who:'NOVA',line:'Why is the floor moving?!',caption:'Unexpected consequences.',pose:'spin'},
-{a:35000,b:40000,who:'ZIP',line:'Because you bought the machine a snack!',caption:'The most expensive snack ever.',pose:'laugh'},
-{a:40000,b:44000,who:'NOVA',line:'…Worth it. Do you have change?',caption:'TO BE CONTINUED…',pose:'shrug'}
+{a:23500,b:29000,who:'ZIP',line:'You pressed it! It charged you for a snack!',caption:'THE MACHINE TAKES PAYMENT…',pose:'panic'},
+{a:29000,b:35000,who:'NOVA',line:'Wait… I paid for that snack?',caption:'A VERY EXPENSIVE SURPRISE.',pose:'spin'},
+{a:35000,b:40000,who:'ZIP',line:'Yes! The snack is right there!',caption:'CASE CLOSED.',pose:'laugh'},
+{a:40000,b:44000,who:'NOVA',line:'So… where is my change?',caption:'TO BE CONTINUED…',pose:'shrug'},
+
 ];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),ease=v=>{v=clamp(v,0,1);return v*v*(3-2*v)};
 function rounded(x,y,w,h,r,fill,stroke){g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=3;g.stroke()}}
@@ -70,7 +71,7 @@ if(face==='angry'){g.moveTo(-28,headY-26);g.lineTo(-8,headY-17);g.moveTo(8,headY
 else if(face==='shock'){g.moveTo(-27,headY-25);g.lineTo(-8,headY-30);g.moveTo(8,headY-30);g.lineTo(27,headY-25)}
 else{g.moveTo(-26,headY-25);g.quadraticCurveTo(-16,headY-30,-7,headY-24);g.moveTo(7,headY-24);g.quadraticCurveTo(16,headY-30,26,headY-25)}g.stroke();
 g.fillStyle=ink;g.beginPath();g.arc(0,headY+7,2.5,0,Math.PI*2);g.fill();
-if(talk){let opening=3+Math.abs(Math.sin(t*.052))*11;g.fillStyle=ink;g.beginPath();g.ellipse(0,headY+23,7+opening*.35,opening,0,0,Math.PI*2);g.fill();g.fillStyle='#ff8d9a';g.beginPath();g.ellipse(0,headY+28,4,3,0,0,Math.PI*2);g.fill()}
+if(talk){let syllable=Math.abs(Math.sin(t*.038)+.38*Math.sin(t*.071));let opening=2+syllable*15;g.fillStyle=ink;g.beginPath();g.ellipse(0,headY+23,5+opening*.38,opening,0,0,Math.PI*2);g.fill();g.fillStyle='#ff8d9a';g.beginPath();g.ellipse(0,headY+27+opening*.12,4+syllable*2,2+syllable*2,0,0,Math.PI*2);g.fill()}
 else if(face==='shock'){g.fillStyle=ink;g.beginPath();g.ellipse(0,headY+23,8,12,0,0,Math.PI*2);g.fill()}
 else{g.strokeStyle=ink;g.beginPath();if(face==='angry'){g.moveTo(-11,headY+25);g.lineTo(11,headY+25)}else{g.arc(0,headY+16,face==='smile'?17:11,.15,Math.PI-.15)}g.stroke()}
 g.restore();
@@ -116,7 +117,8 @@ if(idx===8){na='shrug';nf='sleepy';za='talk';zf='normal'}
 person(novaX,520,now,{col:'#f4f7ff',act:na,face:nf,talk:b.who==='NOVA'&&local<(b.b-b.a-250),jump:nj});
 person(zipX,520,now,{col:'#ffb2a6',act:za,face:zf,talk:b.who==='ZIP'&&local<(b.b-b.a-250),scale:.96});
 if(idx===4&&local>3000){let pulse=1+Math.sin(local*.025)*.18;g.strokeStyle='#ff5268';g.lineWidth=8;g.beginPath();g.arc(650,555,42*pulse,0,Math.PI*2);g.stroke();g.save();g.translate(650,280);g.rotate(Math.sin(now*.04)*.3);g.fillStyle='#ff525f';g.font='bold 70px system-ui';g.textAlign='center';g.fillText('!',0,0);g.restore()}
-if(idx===5){g.fillStyle='#ffe56d';g.font='bold 80px system-ui';g.textAlign='center';g.fillText('BOOOING!',650,250)}
+if(idx===5){g.fillStyle='#ffe56d';g.font='bold 80px system-ui';g.textAlign='center';g.fillText('KA-CHING!',650,250)}
+if(idx>=5){g.save();g.translate(650,470);g.rotate(-.12);rounded(-24,-18,48,38,7,'#ffd45c','#7a4a24');g.fillStyle='#7a4a24';g.font='bold 13px system-ui';g.textAlign='center';g.fillText('SNACK',0,6);g.restore()}
 if(idx===6){for(let i=0;i<10;i++){g.fillStyle=['#ffdc69','#ff8d79','#7fe5d0'][i%3];g.beginPath();g.arc(350+(i*83+now*.12)%600,330+Math.sin(now*.01+i)*100,7,0,7);g.fill()}}
 g.textAlign='center';g.fillStyle='#fff';g.font='bold 31px system-ui';g.shadowColor='#000';g.shadowBlur=8;g.fillText(b.caption,640,64);g.shadowBlur=0;
 speechBubble(b.who,b.line,b.who==='NOVA'?novaX:zipX,idx===6?245:230,now);
@@ -130,15 +132,27 @@ let availableVoices=[];
 function loadVoices(){
 if(!('speechSynthesis'in window))return;
 availableVoices=speechSynthesis.getVoices();
-['novaVoice','zipVoice'].forEach((id,idx)=>{let el=$(id);if(!el)return;let prior=el.value;el.innerHTML='';availableVoices.forEach((v,i)=>{let o=document.createElement('option');o.value=String(i);o.textContent=v.name+' ('+v.lang+')';el.appendChild(o)});if(availableVoices.length){el.value=prior||String(Math.min(idx,availableVoices.length-1))}else{el.innerHTML='<option value="">No device voices found</option>'}});
+const english=availableVoices.map((v,i)=>({v,i})).filter(x=>/^en/i.test(x.v.lang));
+['novaVoice','zipVoice'].forEach((id,idx)=>{
+ const el=$(id);if(!el)return;
+ const prior=el.value;el.innerHTML='';
+ availableVoices.forEach((v,i)=>{let o=document.createElement('option');o.value=String(i);o.textContent=v.name+' ('+v.lang+')';el.appendChild(o)});
+ if(availableVoices.length){
+   const preferred=idx===0?(english[0]?.i??0):(english.find(x=>x.i!==(english[0]?.i??0))?.i??(availableVoices.length>1?1:0));
+   el.value=prior!==''&&Number(prior)<availableVoices.length?prior:String(preferred);
+ }else el.innerHTML='<option value="">No device voices found</option>';
+});
 }
 if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
 function speak(txt,speaker='NOVA'){
 if(!('speechSynthesis'in window))return;
-speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(txt);
-let sel=$(speaker==='ZIP'?'zipVoice':'novaVoice'),v=availableVoices[Number(sel?.value)];
+speechSynthesis.cancel();
+const u=new SpeechSynthesisUtterance(txt);
+const sel=$(speaker==='ZIP'?'zipVoice':'novaVoice');
+const v=availableVoices[Number(sel?.value)];
 if(v)u.voice=v;
-u.rate=speaker==='ZIP'?0.96:1.04;u.pitch=speaker==='ZIP'?.88:1.18;
+if(speaker==='ZIP'){u.rate=.91;u.pitch=.78;u.volume=1}
+else{u.rate=1.04;u.pitch=1.22;u.volume=1}
 speechSynthesis.speak(u);
 }
 function startMusic(){if(audio)return;let AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audio=new AC();musicGain=audio.createGain();musicGain.gain.value=$('music').checked?.075:0;musicGain.connect(audio.destination);let out=audio.createMediaStreamDestination();musicGain.connect(out);window.musicTrack=out.stream;let n=[196,246.94,293.66,246.94,164.81,196,246.94,146.83],i=0;
