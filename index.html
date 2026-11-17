@@ -1,67 +1,122 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stickman Studio — Episode 01</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stickman Studio — The Wrong Button</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,Arial}*{box-sizing:border-box}body{margin:0;background:#0a1020;color:#f5f7ff}header{padding:18px;background:#141f35;border-bottom:1px solid #2c3b59}h1{margin:0;font-size:1.45rem}header p{margin:5px 0 0;color:#b8c5db}.wrap{max-width:960px;margin:auto;padding:15px}.stage{border:1px solid #344766;border-radius:15px;overflow:hidden;background:#070d18}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}.controls{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}button,select{border:0;border-radius:9px;padding:12px 14px;font-size:.94rem;font-weight:700}button{background:#65e0bd;color:#082019}button.alt,select{background:#263754;color:#fff}button:disabled{opacity:.45}.panel{background:#141f35;border:1px solid #2c3b59;border-radius:12px;padding:14px;margin:12px 0}.panel h2{font-size:1rem;margin:0 0 7px}.panel p{color:#c4cee0;line-height:1.5;margin:0}.status{color:#8debd0;margin-top:8px;min-height:1.3em}.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px}label{color:#c4cee0;font-size:.9rem}small{color:#9eafc8}
+:root{color-scheme:dark;font-family:system-ui,Arial}*{box-sizing:border-box}body{margin:0;background:#080e19;color:#f4f7ff}header{padding:18px;background:#142238;border-bottom:1px solid #30415c}h1{margin:0;font-size:1.4rem}header p{margin:5px 0 0;color:#bdcbe0}.wrap{max-width:980px;margin:auto;padding:14px}.stage{border:1px solid #354966;border-radius:15px;overflow:hidden;background:#050914}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}.controls{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}button{border:0;border-radius:10px;padding:12px 14px;font-weight:750;background:#70e1bd;color:#071b17}button.alt{background:#293b57;color:white}button:disabled{opacity:.45}.panel{background:#142238;border:1px solid #30415c;border-radius:13px;padding:14px;margin:12px 0}.panel h2{font-size:1rem;margin:0 0 8px}.panel p{color:#c5d1e1;line-height:1.5;margin:5px 0}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0}label{color:#cbd7e6;font-size:.9rem}.status{color:#8debd0;min-height:1.5em;margin-top:8px}.script{background:#0b1729;border-radius:9px;padding:12px;line-height:1.6;color:#eff7ff}small{color:#9fb0c6}
 </style></head><body>
-<header><h1>⚡ Stickman Studio</h1><p>Episode 01 — The Mysterious Energy • Enhanced edition</p></header>
-<main class="wrap"><div class="stage"><canvas id="scene" width="960" height="540"></canvas></div>
-<div class="controls"><button id="play">Ⅱ Pause</button><button id="restart" class="alt">↻ Restart</button><button id="record">● Record full episode</button><button id="stop" class="alt" disabled>■ Stop & save</button></div>
-<section class="panel"><h2>Sound & voice</h2><div class="row"><label><input id="musicToggle" type="checkbox" checked> Background music</label><label><input id="voiceToggle" type="checkbox" checked> Spoken narration</label><label for="voice">Voice:</label><select id="voice"><option value="">Default device voice</option></select></div><div class="status" id="status">Ready. Tap Play to hear the story.</div></section>
-<section class="panel"><h2>What's improved?</h2><p>More detailed animated scenes, a second character, action effects, story captions, spoken narration using your device's available voice, and original electronic background music. Record full episode to save the animation with background music and your recorded voice-over.</p></section>
-<section class="panel"><h2>Important about vocals</h2><p>To put real vocals into the saved video, tap Record full episode and allow microphone access. Read the character lines shown on screen as the animation plays. Your microphone voice and the original background music will be mixed into the exported video. The device's text-to-speech voice is only a preview and is not included in the recording.</p></section>
-<small>Use Chrome for best results. Keep this page open while recording.</small></main>
+<header><h1>🎬 Stickman Studio</h1><p>Episode 01 — The Wrong Button · Comedy action edition</p></header>
+<main class="wrap">
+<div class="stage"><canvas id="scene" width="1280" height="720" aria-label="Comedy stickman animation"></canvas></div>
+<div class="controls"><button id="play">Ⅱ Play story</button><button id="restart" class="alt">↻ Restart</button><button id="preview" class="alt">🔊 Voice preview</button><button id="record">● Record with my voice</button><button id="stop" class="alt" disabled>■ Stop & save</button></div>
+<section class="panel"><h2>Episode dialogue</h2><div class="script" id="dialogue">NOVA: “Finally! I found the legendary power button.”<br>ZIP: “That is a vending machine.”<br>NOVA: “Same thing. Probably.”</div><div class="row"><label><input id="music" type="checkbox" checked> Background music</label><label><input id="tts" type="checkbox" checked> Device voice preview during playback</label></div><div class="status" id="status">Ready. Tap Play story.</div></section>
+<section class="panel"><h2>What's different now?</h2><p>The characters have visible faces and mouths that move while they speak, separate arm and leg joints, proper walk/run cycles, reactions, falls, jumps, and timed comedy. This episode is a short comedy scene rather than just characters standing still.</p><p><b>Recording:</b> Tap Record with my voice, allow microphone access, and read the dialogue as it appears. Your voice and the music are mixed into the saved video. The browser's synthetic voice is only a preview and is not captured.</p></section>
+<small>Best tested in Chrome. Recording saves a WebM video to your Downloads folder.</small>
+</main>
 <script>
 const c=document.getElementById('scene'),g=c.getContext('2d'),$=id=>document.getElementById(id);
-let start=performance.now(),playing=true,rec=null,chunks=[],audioCtx=null,musicGain=null,musicTimer=null,lastLine=-1;
-const D=30000;
-const scenes=[
-[0,4500,'A quiet night in the city...','NOVA: Another peaceful night. Nothing ever happens here.'],
-[4500,9000,'A strange light falls from the sky!','NOVA: Wait... what is that light?'],
-[9000,13500,'A mysterious orb appears.','NOVA: I can feel energy coming from it.'],
-[13500,18000,'A shadow warrior steps forward.','SHADE: Stay away from that power. It belongs to me!'],
-[18000,22500,'The energy awakens inside Nova!','NOVA: You should have let me touch it.'],
-[22500,27000,'The first battle begins!','SHADE: Impossible! What are you?'],
-[27000,30000,'This is only the beginning...','NARRATOR: A new power has awakened. The real battle is about to begin.']
+const W=1280,H=720,D=44000;
+let start=performance.now(),playing=true,raf=0,rec=null,chunks=[],audio=null,musicGain=null,musicTimer=null,lastScene=-1,mic=null;
+const beats=[
+{a:0,b:5000,who:'NOVA',line:'Finally! I found the legendary power button.',caption:'A HERO IS BORN… probably.',pose:'strut'},
+{a:5000,b:9500,who:'ZIP',line:'That is a vending machine.',caption:'His best friend has concerns.',pose:'look'},
+{a:9500,b:14000,who:'NOVA',line:'Same thing. Probably.',caption:'Confidence: 100%. Knowledge: 0%.',pose:'press'},
+{a:14000,b:18500,who:'ZIP',line:'Please do not press the big red button.',caption:'A very reasonable warning.',pose:'warn'},
+{a:18500,b:23500,who:'NOVA',line:'I heard “press the big red button.”',caption:'He did not hear that.',pose:'press'},
+{a:23500,b:29000,who:'ZIP',line:'That is not what I said!',caption:'THE BUTTON HAS BEEN PRESSED.',pose:'panic'},
+{a:29000,b:35000,who:'NOVA',line:'Why is the floor moving?!',caption:'Unexpected consequences.',pose:'spin'},
+{a:35000,b:40000,who:'ZIP',line:'Because you bought the machine a snack!',caption:'The most expensive snack ever.',pose:'laugh'},
+{a:40000,b:44000,who:'NOVA',line:'…Worth it. Do you have change?',caption:'TO BE CONTINUED…',pose:'shrug'}
 ];
-function speech(text){if(!$('voiceToggle').checked||!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.94;u.pitch=1;const v=$('voice').value;if(v!==''){const voice=speechSynthesis.getVoices().find(x=>x.name===v);if(voice)u.voice=voice;}speechSynthesis.speak(u)}
-function setupVoices(){if(!('speechSynthesis'in window))return;const sel=$('voice');speechSynthesis.getVoices().forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o)})}
-setupVoices();if('speechSynthesis'in window)speechSynthesis.onvoiceschanged=setupVoices;
-function musicOn(){if(audioCtx)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audioCtx=new AC();musicGain=audioCtx.createGain();musicGain.gain.value=$('musicToggle').checked?.11:0;musicGain.connect(audioCtx.destination);const out=audioCtx.createMediaStreamDestination();musicGain.connect(out);window.musicStream=out.stream;
-const notes=[110,146.83,164.81,130.81,98,130.81,146.83,123.47];let i=0;
-musicTimer=setInterval(()=>{if(!audioCtx)return;const t=audioCtx.currentTime;const osc=audioCtx.createOscillator(),env=audioCtx.createGain();osc.type='triangle';osc.frequency.value=notes[i++%notes.length];env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(.35,t+.06);env.gain.exponentialRampToValueAtTime(.0001,t+.65);osc.connect(env);env.connect(musicGain);osc.start(t);osc.stop(t+.7);
-const bass=audioCtx.createOscillator(),be=audioCtx.createGain();bass.type='sine';bass.frequency.value=55;be.gain.setValueAtTime(.0001,t);be.gain.exponentialRampToValueAtTime(.12,t+.03);be.gain.exponentialRampToValueAtTime(.0001,t+.3);bass.connect(be);be.connect(musicGain);bass.start(t);bass.stop(t+.32);
-},430)}
-$('musicToggle').onchange=()=>{if(musicGain)musicGain.gain.setTargetAtTime($('musicToggle').checked?.11:0,audioCtx.currentTime,.15)};
-function line(x,y,X,Y,w=8){g.lineWidth=w;g.lineCap='round';g.beginPath();g.moveTo(x,y);g.lineTo(X,Y);g.stroke()}
-function hero(x,y,t,color='#f4f7ff',power=false,action=0){g.save();g.translate(x,y);g.strokeStyle=color;g.shadowColor=power?'#54ffe0':'transparent';g.shadowBlur=power?25:0;let run=Math.sin(t*.012)*20,arm=Math.sin(t*.014)*24;
-g.beginPath();g.arc(0,-102,23,0,Math.PI*2);g.lineWidth=9;g.stroke();line(0,-78,0,-25,10);
-if(action===1){line(0,-65,-40,-95,9);line(0,-65,35,-38,9)}else if(action===2){line(0,-65,-38+arm,-35,9);line(0,-65,38-arm,-35,9)}else{line(0,-65,-30+arm,-35,9);line(0,-65,30-arm,-35,9)}
-line(0,-25,-19+run,24,10);line(0,-25,18-run,24,10);
-if(power){g.beginPath();g.arc(0,-55,62+Math.sin(t*.02)*7,0,Math.PI*2);g.lineWidth=3;g.stroke()}g.restore()}
-function background(t){let sky=g.createLinearGradient(0,0,0,540);sky.addColorStop(0,'#111d43');sky.addColorStop(1,'#080d19');g.fillStyle=sky;g.fillRect(0,0,960,540);
-for(let i=0;i<9;i++){let x=i*115+15,h=90+(i*47)%125;g.fillStyle=i%2?'#1b2d4c':'#202849';g.fillRect(x,430-h,78,h);for(let j=0;j<5;j++)for(let k=0;k<Math.floor(h/30);k++){g.fillStyle='rgba(120,190,255,.35)';g.fillRect(x+12+j*12,440-h+k*24,5,9)}}
-g.fillStyle='#101c2b';g.fillRect(0,430,960,110);g.fillStyle='#41606a';g.fillRect(0,430,960,4);
-for(let i=0;i<55;i++){g.fillStyle='rgba(255,255,255,.55)';g.fillRect((i*173)%960,(i*79)%320,2,2)}}
-function orb(x,y,t){g.save();g.shadowColor='#56cfff';g.shadowBlur=45;let r=18+Math.sin(t*.01)*5;let gr=g.createRadialGradient(x,y,2,x,y,r+15);gr.addColorStop(0,'white');gr.addColorStop(.3,'#b9f7ff');gr.addColorStop(1,'#269fff');g.fillStyle=gr;g.beginPath();g.arc(x,y,r+12,0,Math.PI*2);g.fill();g.restore()}
-function bubble(text){g.fillStyle='rgba(4,10,24,.83)';g.fillRect(45,80,870,62);g.strokeStyle='#4f789e';g.lineWidth=2;g.strokeRect(45,80,870,62);g.fillStyle='#fff';g.font='bold 21px system-ui';g.textAlign='center';g.fillText(text,480,119)}
-function draw(now){let t=(now-start)%D;g.clearRect(0,0,960,540);background(t);
-let x=t<9000?140+t/9000*300:440;let powered=t>18000;
-if(t>7000&&t<22000)orb(625,365,now);
-hero(x,405,now,'#f6f8ff',powered,t>22500?1:0);
-if(t>15500){let sx=t<22000?800:760-(t-22000)*.015;hero(sx,405,now,'#ff9b91',false,2)}
-if(t>18000){g.save();g.strokeStyle='rgba(72,255,214,.75)';g.lineWidth=5;for(let i=0;i<12;i++){let a=i*Math.PI/6+t*.001;g.beginPath();g.moveTo(440,350);g.lineTo(440+Math.cos(a)*150,350+Math.sin(a)*150);g.stroke()}g.restore()}
-if(t>22500){for(let i=0;i<8;i++){g.fillStyle='rgba(255,190,90,.7)';g.beginPath();g.arc(550+Math.sin(now*.01+i)*80,300+Math.cos(now*.014+i)*65,4,0,7);g.fill()}}
-let sc=scenes.find(s=>t>=s[0]&&t<s[1]);g.fillStyle='#fff';g.font='bold 29px system-ui';g.textAlign='center';g.fillText(sc[2],480,54);bubble(sc[3]);
-g.fillStyle='#a9c7df';g.font='16px system-ui';g.fillText('STICKMAN STUDIO  •  EPISODE 01',480,510);
-let idx=scenes.indexOf(sc);if(idx!==lastLine){lastLine=idx;if(playing)speech(sc[3])}
-if(playing)requestAnimationFrame(draw)}
-function restart(){start=performance.now();playing=true;lastLine=-1;musicOn();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();$('play').textContent='Ⅱ Pause';requestAnimationFrame(draw);$('status').textContent='Episode restarted.'}
-$('play').onclick=()=>{if(playing){playing=false;$('play').textContent='▶ Play';if('speechSynthesis'in window)speechSynthesis.pause();$('status').textContent='Paused.'}else{playing=true;start=performance.now();lastLine=-1;if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();if('speechSynthesis'in window)speechSynthesis.resume();$('play').textContent='Ⅱ Pause';requestAnimationFrame(draw)}};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),ease=v=>{v=clamp(v,0,1);return v*v*(3-2*v)};
+function rounded(x,y,w,h,r,fill,stroke){g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=3;g.stroke()}}
+function line(x,y,X,Y,w=12,col){g.strokeStyle=col;g.lineWidth=w;g.lineCap='round';g.lineJoin='round';g.beginPath();g.moveTo(x,y);g.lineTo(X,Y);g.stroke()}
+function limb(points,col,width=13){for(let i=0;i<points.length-1;i++)line(points[i][0],points[i][1],points[i+1][0],points[i+1][1],width,col);for(let i=1;i<points.length-1;i++){g.fillStyle=col;g.beginPath();g.arc(points[i][0],points[i][1],width*.48,0,Math.PI*2);g.fill()}}
+function person(x,ground,t,opt={}){
+const col=opt.col||'#f5f7ff',scale=opt.scale||1,act=opt.act||'idle',talk=!!opt.talk,face=opt.face||'normal',jump=opt.jump||0;
+g.save();g.translate(x,ground-jump);g.scale(scale,scale);
+let bob=act==='walk'?Math.abs(Math.sin(t*.012))*9:act==='run'?Math.abs(Math.sin(t*.025))*17:act==='laugh'?Math.sin(t*.035)*5:0;
+let lean=act==='fall'?.8:act==='stumble'?-.42:act==='press'?.25:0;
+g.translate(0,-bob);g.rotate(lean);
+let headY=-172,shoulderY=-126,hipY=-55,step=Math.sin(t*(act==='run'?.025:.012));
+g.strokeStyle=col;g.fillStyle=col;g.lineCap='round';g.lineJoin='round';
+// legs with clear knees and feet
+let legA=act==='fall'?-.8:step*.55,legB=act==='fall'?.8:-step*.55;
+limb([[0,hipY],[-15+legA*22,-18],[-20+legA*40,20]],col,14);
+limb([[0,hipY],[15+legB*22,-18],[20+legB*40,20]],col,14);
+line(-20+legA*40,20,-2+legA*40,20,11,col);line(20+legB*40,20,38+legB*40,20,11,col);
+// torso and arms
+line(0,shoulderY,0,hipY,15,col);
+let arm1,arm2;
+if(act==='press'){arm1=[[-2,-120],[-26,-90],[-48,-70]];arm2=[[2,-120],[35,-150],[70,-180]]}
+else if(act==='warn'){arm1=[[-2,-120],[-42,-145],[-60,-178]];arm2=[[2,-120],[35,-95],[55,-85]]}
+else if(act==='laugh'){arm1=[[-2,-120],[-35,-145],[-45,-175]];arm2=[[2,-120],[35,-145],[45,-175]]}
+else if(act==='panic'||act==='stumble'){arm1=[[-2,-120],[-38,-155],[-58,-185]];arm2=[[2,-120],[42,-155],[62,-185]]}
+else if(act==='fall'){arm1=[[-2,-120],[-38,-115],[-65,-95]];arm2=[[2,-120],[38,-145],[65,-165]]}
+else{arm1=[[-2,-120],[-32,-95+step*23],[-42,-65+step*30]];arm2=[[2,-120],[32,-95-step*23],[42,-65-step*30]]}
+limb(arm1,col,12);limb(arm2,col,12);
+// head
+g.fillStyle=col;g.beginPath();g.arc(0,headY,42,0,Math.PI*2);g.fill();
+g.fillStyle='#101827';
+if(face==='shock'){g.beginPath();g.arc(-14,headY-5,7,0,Math.PI*2);g.arc(14,headY-5,7,0,Math.PI*2);g.fill();g.beginPath();g.arc(0,headY+19,8,0,Math.PI*2);g.fill()}
+else if(face==='sleepy'){g.lineWidth=5;g.strokeStyle='#101827';g.beginPath();g.moveTo(-24,headY-5);g.lineTo(-8,headY-5);g.moveTo(8,headY-5);g.lineTo(24,headY-5);g.stroke();g.beginPath();g.arc(0,headY+17,8,0,Math.PI);g.stroke()}
+else{g.beginPath();g.arc(-14,headY-6,5,0,Math.PI*2);g.arc(14,headY-6,5,0,Math.PI*2);g.fill();g.strokeStyle='#101827';g.lineWidth=4;g.beginPath();if(face==='angry'){g.moveTo(-25,headY-20);g.lineTo(-8,headY-14);g.moveTo(8,headY-14);g.lineTo(25,headY-20)}else{g.arc(0,headY+8,face==='smile'?17:12,.15,Math.PI-.15)}g.stroke()}
+if(talk){g.fillStyle='#101827';g.beginPath();g.ellipse(0,headY+20,8+Math.abs(Math.sin(t*.04))*6,4+Math.abs(Math.sin(t*.04))*7,0,0,Math.PI*2);g.fill()}
+g.restore();
+}
+function city(){
+let sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#17284b');sky.addColorStop(1,'#f08b70');g.fillStyle=sky;g.fillRect(0,0,W,H);
+g.fillStyle='#fff1bd';g.beginPath();g.arc(1060,135,58,0,7);g.fill();
+for(let i=0;i<11;i++){let x=i*125-20,h=170+(i*83)%210;g.fillStyle=i%2?'#283b60':'#1e3150';g.fillRect(x,510-h,95,h);for(let j=0;j<4;j++)for(let k=0;k<h/38;k++){g.fillStyle=(j+k)%2?'#ffd58a':'#86c9dc';g.fillRect(x+15+j*19,525-h+k*34,8,12)}}
+g.fillStyle='#28313c';g.fillRect(0,520,W,200);g.fillStyle='#e6ba76';g.fillRect(0,520,W,7);
+}
+function vending(x,y,t,shake=false){
+g.save();g.translate(x,y);if(shake)g.rotate(Math.sin(t*.08)*.08);
+rounded(-82,-230,164,230,17,'#31566f','#b7d9e5');rounded(-65,-210,130,105,9,'#102337','#6f9cb1');
+for(let i=0;i<3;i++){g.fillStyle=['#f76f72','#f5c65e','#6ce0b3'][i];g.beginPath();g.arc(-35+i*35,-175,12,0,7);g.fill()}
+rounded(-58,-88,116,95,8,'#162b40','#5c8499');g.fillStyle='#e6f4ff';g.font='bold 18px system-ui';g.textAlign='center';g.fillText('SNACK-O-MATIC',0,-115);
+rounded(-30,20,60,28,5,'#101b29','#93aebd');g.fillStyle='#ff4e5f';g.beginPath();g.arc(0,34,13,0,7);g.fill();g.fillStyle='#fff';g.font='bold 11px system-ui';g.fillText('PUSH',0,63);
+g.restore()}
+function speechBubble(name,text,x,y,t){
+g.font='bold 23px system-ui';let lines=text.length>45?[text.slice(0,44),text.slice(44)]:[text];let w=Math.min(670,Math.max(330,...lines.map(v=>g.measureText(v).width+50))),h=lines.length*34+38;
+rounded(x-w/2,y-h,w,h,20,'#fff','#1b2940');g.fillStyle='#192a42';g.textAlign='left';g.font='bold 16px system-ui';g.fillText(name,x-w/2+20,y-h+24);
+g.font='bold 22px system-ui';lines.forEach((v,i)=>g.fillText(v,x-w/2+20,y-h+55+i*32));
+g.fillStyle='#fff';g.beginPath();g.moveTo(x-14,y);g.lineTo(x+10,y);g.lineTo(x,y+20);g.fill();
+}
+function draw(now){
+if(!playing)return;let t=(now-start)%D,b=beats.find(v=>t>=v.a&&t<v.b),idx=beats.indexOf(b),local=t-b.a;city();
+let novaX=idx<3?250:idx<6?420:idx===6?520:480,zipX=idx<3?870:idx<6?900:800;
+vending(650,520,now,idx===6);
+let na='idle',za='idle',nf='normal',zf='normal',nj=0;
+if(idx===0){na='walk';nf='smile';novaX=120+ease(local/5000)*390}
+if(idx===1){na='look';nf='shock';za='idle';zf='sleepy'}
+if(idx===2){na='press';nf='smile'}
+if(idx===3){za='warn';zf='angry';na='idle';nf='normal'}
+if(idx===4){na='press';nf='smile';if(local>3000)nj=25}
+if(idx===5){na='panic';nf='shock';za='panic';zf='shock'}
+if(idx===6){na='stumble';nf='shock';za='run';zf='shock';novaX=500+Math.sin(local*.02)*45;zipX=850-ease(local/6000)*260}
+if(idx===7){na='laugh';nf='smile';za='laugh';zf='smile'}
+if(idx===8){na='shrug';nf='sleepy';za='idle';zf='normal'}
+person(novaX,520,now,{col:'#f4f7ff',act:na,face:nf,talk:b.who==='NOVA'&&local<4000,jump:nj});
+person(zipX,520,now,{col:'#ffb2a6',act:za,face:zf,talk:b.who==='ZIP'&&local<4000,scale:.96});
+if(idx===4&&local>3000){g.save();g.translate(650,280);g.rotate(Math.sin(now*.04)*.3);g.fillStyle='#ff525f';g.font='bold 70px system-ui';g.textAlign='center';g.fillText('!',0,0);g.restore()}
+if(idx===5){g.fillStyle='#ffe56d';g.font='bold 80px system-ui';g.textAlign='center';g.fillText('BOOOING!',650,250)}
+if(idx===6){for(let i=0;i<10;i++){g.fillStyle=['#ffdc69','#ff8d79','#7fe5d0'][i%3];g.beginPath();g.arc(350+(i*83+now*.12)%600,330+Math.sin(now*.01+i)*100,7,0,7);g.fill()}}
+g.textAlign='center';g.fillStyle='#fff';g.font='bold 31px system-ui';g.shadowColor='#000';g.shadowBlur=8;g.fillText(b.caption,640,64);g.shadowBlur=0;
+speechBubble(b.who,b.line,b.who==='NOVA'?novaX:zipX,idx===6?245:230,now);
+g.fillStyle='rgba(0,0,0,.42)';g.fillRect(0,665,W,55);g.fillStyle='#d7f9ef';g.font='bold 18px system-ui';g.fillText('STICKMAN STUDIO  •  THE WRONG BUTTON',640,700);
+$('dialogue').innerHTML='<b>'+b.who+':</b> “'+b.line+'”<br><span style="color:#b8c8dc">'+b.caption+'</span>';
+if(idx!==lastScene){lastScene=idx;if($('tts').checked&&!window.isRecording) speak(b.who+'. '+b.line)}
+raf=requestAnimationFrame(draw);
+}
+function speak(txt){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(txt);u.rate=1.02;u.pitch=1.12;speechSynthesis.speak(u)}
+function startMusic(){if(audio)return;let AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audio=new AC();musicGain=audio.createGain();musicGain.gain.value=$('music').checked?.075:0;musicGain.connect(audio.destination);let out=audio.createMediaStreamDestination();musicGain.connect(out);window.musicTrack=out.stream;let n=[196,246.94,293.66,246.94,164.81,196,246.94,146.83],i=0;
+musicTimer=setInterval(()=>{let t=audio.currentTime;[n[i++%n.length],82.41].forEach((f,j)=>{let o=audio.createOscillator(),e=audio.createGain();o.type=j?'sine':'triangle';o.frequency.value=f;e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(j?.12:.2,t+.035);e.gain.exponentialRampToValueAtTime(.0001,t+(j?.22:.28));o.connect(e);e.connect(musicGain);o.start(t);o.stop(t+(j?.23:.29))})},330)}
+$('music').onchange=()=>{if(musicGain)musicGain.gain.setTargetAtTime($('music').checked?.075:0,audio.currentTime,.1)};
+function restart(){cancelAnimationFrame(raf);start=performance.now();playing=true;lastScene=-1;startMusic();if(audio?.state==='suspended')audio.resume();$('play').textContent='Ⅱ Pause';draw(performance.now());$('status').textContent='Story restarted.'}
+$('play').onclick=()=>{if(playing){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play story';if('speechSynthesis'in window)speechSynthesis.cancel()}else{playing=true;start=performance.now();lastScene=-1;if(audio?.state==='suspended')audio.resume();$('play').textContent='Ⅱ Pause';draw(performance.now())}};
 $('restart').onclick=restart;
-$('record').onclick=async()=>{if(!c.captureStream||!window.MediaRecorder){$('status').textContent='Recording is unsupported here. Please try Chrome.';return}
-restart();if(audioCtx&&audioCtx.state==='suspended')await audioCtx.resume();let micStream;try{micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){$('status').textContent='Microphone permission is needed to record your voice. Allow it and try again.';return}if('speechSynthesis'in window)speechSynthesis.cancel();let mixDest=audioCtx.createMediaStreamDestination();musicGain.connect(mixDest);let micSource=audioCtx.createMediaStreamSource(micStream);micSource.connect(mixDest);let stream=c.captureStream(30);mixDest.stream.getAudioTracks().forEach(tr=>stream.addTrack(tr));
-chunks=[];let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';rec=new MediaRecorder(stream,{mimeType:mime});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{let blob=new Blob(chunks,{type:'video/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='stickman-episode-01-enhanced.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);micStream.getTracks().forEach(tr=>tr.stop());$('status').textContent='Video saved with your microphone narration and background music. Check Downloads.'};
-rec.start();$('record').disabled=true;$('stop').disabled=false;$('status').textContent='Recording full 30-second episode. Let it play, then Stop & save.'};
+$('preview').onclick=()=>{let txt=beats.map(b=>b.who+'. '+b.line).join(' ');speak(txt);$('status').textContent='Voice preview playing. Voices depend on your device.'};
+$('record').onclick=async()=>{if(!c.captureStream||!window.MediaRecorder){$('status').textContent='Recording is not supported. Try Chrome.';return}
+try{startMusic();await audio.resume();mic=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});let dest=audio.createMediaStreamDestination(),ms=audio.createMediaStreamSource(mic);ms.connect(dest);musicGain.connect(dest);window.isRecording=true;if('speechSynthesis'in window)speechSynthesis.cancel();restart();let stream=c.captureStream(30);dest.stream.getAudioTracks().forEach(tr=>stream.addTrack(tr));let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';chunks=[];rec=new MediaRecorder(stream,{mimeType:mime});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{let blob=new Blob(chunks,{type:'video/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='stickman-the-wrong-button.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);mic?.getTracks().forEach(x=>x.stop());window.isRecording=false;$('status').textContent='Saved! Your microphone voice and background music are included.'};rec.start(1000);$('record').disabled=true;$('stop').disabled=false;$('status').textContent='Recording. Read the dialogue aloud as it appears. The episode is 44 seconds.'}catch(e){mic?.getTracks().forEach(x=>x.stop());$('status').textContent='Could not start microphone recording. Allow microphone access and try again.'}};
 $('stop').onclick=()=>{if(rec&&rec.state!=='inactive')rec.stop();$('record').disabled=false;$('stop').disabled=true};
-musicOn();if(audioCtx)audioCtx.suspend();requestAnimationFrame(draw);
+startMusic();if(audio)audio.suspend();draw(performance.now());
 </script></body></html>
