@@ -58,7 +58,7 @@ else if(act==='shrug'){arm1=[[-2,-120],[-38,-150],[-65,-145]];arm2=[[2,-120],[38
 else if(act==='talk'){arm1=[[-2,-120],[-28,-100],[-35,-78]];arm2=[[2,-120],[28,-100],[35,-78]]}
 else{arm1=[[-2,-120],[-32,-96+step*18],[-42,-68+step*24]];arm2=[[2,-120],[32,-96-step*18],[42,-68-step*24]]}
 limb(arm1,col,12);limb(arm2,col,12);
-for(const p of [arm1[2],arm2[2]]){g.fillStyle=col;g.beginPath();g.arc(p[0],p[1],8,0,Math.PI*2);g.fill()}
+for(const p of [arm1[2],arm2[2]]){g.fillStyle=col;g.beginPath();g.arc(p[0],p[1],8,0,Math.PI*2);g.fill()}\nif(act==='press'){line(125,30,135,33,5,col);g.fillStyle='#ffe45e';g.beginPath();g.arc(125,30,13,0,Math.PI*2);g.fill();g.strokeStyle='#fff4b0';g.lineWidth=4;g.stroke()}
 g.fillStyle=col;g.strokeStyle=ink;g.lineWidth=4;g.beginPath();g.arc(0,headY,43,0,Math.PI*2);g.fill();g.stroke();
 if(nova){g.strokeStyle=accent;g.lineWidth=7;g.beginPath();g.moveTo(-19,headY-37);g.lineTo(-8,headY-49);g.lineTo(1,headY-39);g.stroke()}
 else{g.strokeStyle=accent;g.lineWidth=7;g.beginPath();g.arc(0,headY-2,48,Math.PI*1.08,Math.PI*1.9);g.stroke();g.fillStyle=accent;g.beginPath();g.arc(37,headY-22,7,0,Math.PI*2);g.fill()}
