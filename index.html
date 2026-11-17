@@ -7,7 +7,7 @@
 <main class="wrap">
 <div class="stage"><canvas id="scene" width="1280" height="720" aria-label="Comedy stickman animation"></canvas></div>
 <div class="controls"><button id="play">Ⅱ Play story</button><button id="restart" class="alt">↻ Restart</button><button id="preview" class="alt">🔊 Voice preview</button><button id="record">● Record with my voice</button><button id="stop" class="alt" disabled>■ Stop & save</button></div>
-<section class="panel"><h2>Episode dialogue</h2><div class="script" id="dialogue">NOVA: “Finally! I found the legendary power button.”<br>ZIP: “That is a vending machine.”<br>NOVA: “Same thing. Probably.”</div><div class="row"><label><input id="music" type="checkbox" checked> Background music</label><label><input id="tts" type="checkbox" checked> Device voice preview during playback</label></div><div class="status" id="status">Ready. Tap Play story.</div></section>
+<section class="panel"><h2>Episode dialogue</h2><div class="script" id="dialogue">NOVA: “Finally! I found the legendary power button.”<br>ZIP: “That is a vending machine.”<br>NOVA: “Same thing. Probably.”</div><div class="row"><label><input id="music" type="checkbox" checked> Background music</label><label><input id="tts" type="checkbox" checked> Device voice preview during playback</label></div><div class="row"><label>Nova voice <select id="novaVoice"><option value="">Loading voices…</option></select></label><label>Zip voice <select id="zipVoice"><option value="">Loading voices…</option></select></label><button id="testVoices" class="alt" type="button">Test both voices</button></div><small>Choose two different voices from the voices available on your device. Chrome/Android voice options vary.</small><div class="status" id="status">Ready. Tap Play story.</div></section>
 <section class="panel"><h2>What's different now?</h2><p>The characters have visible faces and mouths that move while they speak, separate arm and leg joints, proper walk/run cycles, reactions, falls, jumps, and timed comedy. This episode is a short comedy scene rather than just characters standing still.</p><p><b>Recording:</b> Tap Record with my voice, allow microphone access, and read the dialogue as it appears. Your voice and the music are mixed into the saved video. The browser's synthetic voice is only a preview and is not captured.</p></section>
 <small>Best tested in Chrome. Recording saves a WebM video to your Downloads folder.</small>
 </main>
@@ -34,13 +34,13 @@ function person(x,ground,t,opt={}){
 const col=opt.col||'#f5f7ff',scale=opt.scale||1,act=opt.act||'idle',talk=!!opt.talk,face=opt.face||'normal',jump=opt.jump||0;
 const nova=col==='#f4f7ff',ink='#142238',accent=nova?'#48d7c0':'#4269a8';
 g.save();g.translate(x,ground-jump);g.scale(scale,scale);
-let bob=act==='walk'?Math.abs(Math.sin(t*.012))*9:act==='run'?Math.abs(Math.sin(t*.025))*17:act==='laugh'?Math.sin(t*.035)*5:0;
-let lean=act==='fall'?.8:act==='stumble'?-.42:act==='press'?.25:0;
+const moving=act==='walk'||act==='run',step=moving?Math.sin(t*(act==='run'?.025:.012)):0;
+let bob=act==='walk'?Math.abs(step)*7:act==='run'?Math.abs(step)*13:act==='laugh'?Math.sin(t*.018)*2:0;
+let lean=act==='fall'?.8:act==='stumble'?-.25:0;
 g.translate(0,-bob);g.rotate(lean);
-const headY=-172,shoulderY=-126,hipY=-55,step=Math.sin(t*(act==='run'?.025:.012));
-const blink=(t%3900>3720)||(t%3900<115),eyeY=headY-7;
-g.strokeStyle=col;g.fillStyle=col;g.lineCap='round';g.lineJoin='round';
-let legA=act==='fall'?-.8:step*.55,legB=act==='fall'?.8:-step*.55;
+const headY=-172,shoulderY=-126,hipY=-55,blink=(t%4100>3930),eyeY=headY-7;
+g.lineCap='round';g.lineJoin='round';
+let legA=act==='fall'?-.8:step*.48,legB=act==='fall'?.8:-step*.48;
 limb([[0,hipY],[-15+legA*22,-18],[-20+legA*40,20]],col,14);
 limb([[0,hipY],[15+legB*22,-18],[20+legB*40,20]],col,14);
 line(-20+legA*40,20,-2+legA*40,20,15,ink);line(-20+legA*40,17,-2+legA*40,17,9,accent);
@@ -49,31 +49,29 @@ line(0,shoulderY,0,hipY,23,ink);line(0,shoulderY,0,hipY,16,col);
 line(-8,-116,0,-106,4,accent);line(8,-116,0,-106,4,accent);
 g.fillStyle=accent;g.beginPath();g.roundRect(-5,-99,10,8,3);g.fill();
 let arm1,arm2;
-if(act==='press'){arm1=[[-2,-120],[-26,-90],[-48,-70]];arm2=[[2,-120],[35,-150],[70,-180]]}
+if(act==='press'){arm1=[[-2,-120],[-27,-100],[-45,-80]];arm2=[[2,-120],[55,-125],[105,-135]]}
 else if(act==='warn'){arm1=[[-2,-120],[-42,-145],[-60,-178]];arm2=[[2,-120],[35,-95],[55,-85]]}
 else if(act==='laugh'){arm1=[[-2,-120],[-35,-145],[-45,-175]];arm2=[[2,-120],[35,-145],[45,-175]]}
 else if(act==='panic'||act==='stumble'){arm1=[[-2,-120],[-38,-155],[-58,-185]];arm2=[[2,-120],[42,-155],[62,-185]]}
 else if(act==='fall'){arm1=[[-2,-120],[-38,-115],[-65,-95]];arm2=[[2,-120],[38,-145],[65,-165]]}
 else if(act==='shrug'){arm1=[[-2,-120],[-38,-150],[-65,-145]];arm2=[[2,-120],[38,-150],[65,-145]]}
-else{arm1=[[-2,-120],[-32,-95+step*23],[-42,-65+step*30]];arm2=[[2,-120],[32,-95-step*23],[42,-65-step*30]]}
+else if(act==='talk'){arm1=[[-2,-120],[-28,-100],[-35,-78]];arm2=[[2,-120],[28,-100],[35,-78]]}
+else{arm1=[[-2,-120],[-32,-96+step*18],[-42,-68+step*24]];arm2=[[2,-120],[32,-96-step*18],[42,-68-step*24]]}
 limb(arm1,col,12);limb(arm2,col,12);
 for(const p of [arm1[2],arm2[2]]){g.fillStyle=col;g.beginPath();g.arc(p[0],p[1],8,0,Math.PI*2);g.fill()}
 g.fillStyle=col;g.strokeStyle=ink;g.lineWidth=4;g.beginPath();g.arc(0,headY,43,0,Math.PI*2);g.fill();g.stroke();
 if(nova){g.strokeStyle=accent;g.lineWidth=7;g.beginPath();g.moveTo(-19,headY-37);g.lineTo(-8,headY-49);g.lineTo(1,headY-39);g.stroke()}
 else{g.strokeStyle=accent;g.lineWidth=7;g.beginPath();g.arc(0,headY-2,48,Math.PI*1.08,Math.PI*1.9);g.stroke();g.fillStyle=accent;g.beginPath();g.arc(37,headY-22,7,0,Math.PI*2);g.fill()}
 if(blink){g.strokeStyle=ink;g.lineWidth=4;g.beginPath();g.moveTo(-25,eyeY);g.lineTo(-8,eyeY);g.moveTo(8,eyeY);g.lineTo(25,eyeY);g.stroke()}
-else{g.fillStyle='#fff';g.beginPath();g.ellipse(-16,eyeY,10,13,0,0,Math.PI*2);g.ellipse(16,eyeY,10,13,0,0,Math.PI*2);g.fill();g.fillStyle=ink;let look=act==='press'?4:2;g.beginPath();g.arc(-14+look,eyeY+1,5,0,Math.PI*2);g.arc(18+look,eyeY+1,5,0,Math.PI*2);g.fill()}
+else{g.fillStyle='#fff';g.beginPath();g.ellipse(-16,eyeY,10,13,0,0,Math.PI*2);g.ellipse(16,eyeY,10,13,0,0,Math.PI*2);g.fill();g.fillStyle=ink;let look=act==='press'?4:act==='talk'?3:0;g.beginPath();g.arc(-14+look,eyeY+1,5,0,Math.PI*2);g.arc(18+look,eyeY+1,5,0,Math.PI*2);g.fill()}
 g.strokeStyle=ink;g.lineWidth=4;g.beginPath();
 if(face==='angry'){g.moveTo(-28,headY-26);g.lineTo(-8,headY-17);g.moveTo(8,headY-17);g.lineTo(28,headY-26)}
 else if(face==='shock'){g.moveTo(-27,headY-25);g.lineTo(-8,headY-30);g.moveTo(8,headY-30);g.lineTo(27,headY-25)}
-else{g.moveTo(-26,headY-25);g.quadraticCurveTo(-16,headY-30,-7,headY-24);g.moveTo(7,headY-24);g.quadraticCurveTo(16,headY-30,26,headY-25)}
-g.stroke();g.fillStyle=ink;g.beginPath();g.arc(0,headY+7,2.5,0,Math.PI*2);g.fill();
-g.strokeStyle=ink;g.fillStyle=ink;g.lineWidth=4;
-if(talk){let opening=4+Math.abs(Math.sin(t*.045))*10;g.beginPath();g.ellipse(0,headY+23,8+opening*.35,opening,0,0,Math.PI*2);g.fill();g.fillStyle='#ff8d9a';g.beginPath();g.ellipse(0,headY+28,4,3,0,0,Math.PI*2);g.fill()}
-else if(face==='shock'){g.beginPath();g.ellipse(0,headY+23,8,12,0,0,Math.PI*2);g.fill()}
-else if(face==='angry'){g.beginPath();g.moveTo(-11,headY+25);g.lineTo(11,headY+25);g.stroke()}
-else if(face==='sleepy'){g.beginPath();g.arc(0,headY+20,9,0,Math.PI);g.stroke()}
-else{g.beginPath();g.arc(0,headY+16,face==='smile'?17:11,.15,Math.PI-.15);g.stroke()}
+else{g.moveTo(-26,headY-25);g.quadraticCurveTo(-16,headY-30,-7,headY-24);g.moveTo(7,headY-24);g.quadraticCurveTo(16,headY-30,26,headY-25)}g.stroke();
+g.fillStyle=ink;g.beginPath();g.arc(0,headY+7,2.5,0,Math.PI*2);g.fill();
+if(talk){let opening=3+Math.abs(Math.sin(t*.052))*11;g.fillStyle=ink;g.beginPath();g.ellipse(0,headY+23,7+opening*.35,opening,0,0,Math.PI*2);g.fill();g.fillStyle='#ff8d9a';g.beginPath();g.ellipse(0,headY+28,4,3,0,0,Math.PI*2);g.fill()}
+else if(face==='shock'){g.fillStyle=ink;g.beginPath();g.ellipse(0,headY+23,8,12,0,0,Math.PI*2);g.fill()}
+else{g.strokeStyle=ink;g.beginPath();if(face==='angry'){g.moveTo(-11,headY+25);g.lineTo(11,headY+25)}else{g.arc(0,headY+16,face==='smile'?17:11,.15,Math.PI-.15)}g.stroke()}
 g.restore();
 }
 function city(){
@@ -102,18 +100,18 @@ let zoom=idx===2||idx===4?1.07:idx===5?1.12:idx===6?1.09:idx===7?1.04:1;
 let panX=idx===0?-35:idx===1?28:idx===4?18:idx===5?-15:idx===6?Math.sin(now*.025)*12:0;
 let shake=idx===5&&local>1200?Math.sin(now*.09)*5:idx===6?Math.sin(now*.055)*3:0;
 g.save();g.translate(W/2+panX+shake,H/2);g.scale(zoom,zoom);g.translate(-W/2,-H/2);
-let novaX=idx<3?250:idx<6?420:idx===6?520:480,zipX=idx<3?870:idx<6?900:800;
+let novaX=idx===0?250:idx<5?525:idx<6?420:idx===6?520:480,zipX=idx<5?875:idx<6?900:800;
 vending(650,520,now,idx===6);
 let na='idle',za='idle',nf='normal',zf='normal',nj=0;
 if(idx===0){na='walk';nf='smile';novaX=120+ease(local/5000)*390}
-if(idx===1){na='look';nf='shock';za='idle';zf='sleepy'}
-if(idx===2){na='press';nf='smile'}
-if(idx===3){za='warn';zf='angry';na='idle';nf='normal'}
-if(idx===4){na='press';nf='smile';if(local>3000)nj=25}
+if(idx===1){na='talk';nf='shock';za='talk';zf='sleepy'}
+if(idx===2){na='press';nf='smile';novaX=525}
+if(idx===3){za='warn';zf='angry';na='talk';nf='normal'}
+if(idx===4){na='press';nf='smile';novaX=525;if(local>3000)nj=12}
 if(idx===5){na='panic';nf='shock';za='panic';zf='shock'}
 if(idx===6){na=local>3600?'fall':'stumble';nf='shock';za='run';zf='shock';novaX=500+Math.sin(local*.02)*45;zipX=850-ease(local/6000)*260}
-if(idx===7){na='laugh';nf='smile';za='laugh';zf='smile'}
-if(idx===8){na='shrug';nf='sleepy';za='idle';zf='normal'}
+if(idx===7){na='talk';nf='smile';za='laugh';zf='smile'}
+if(idx===8){na='shrug';nf='sleepy';za='talk';zf='normal'}
 person(novaX,520,now,{col:'#f4f7ff',act:na,face:nf,talk:b.who==='NOVA'&&local<(b.b-b.a-250),jump:nj});
 person(zipX,520,now,{col:'#ffb2a6',act:za,face:zf,talk:b.who==='ZIP'&&local<(b.b-b.a-250),scale:.96});
 if(idx===4&&local>3000){let pulse=1+Math.sin(local*.025)*.18;g.strokeStyle='#ff5268';g.lineWidth=8;g.beginPath();g.arc(650,555,42*pulse,0,Math.PI*2);g.stroke();g.save();g.translate(650,280);g.rotate(Math.sin(now*.04)*.3);g.fillStyle='#ff525f';g.font='bold 70px system-ui';g.textAlign='center';g.fillText('!',0,0);g.restore()}
@@ -124,17 +122,32 @@ speechBubble(b.who,b.line,b.who==='NOVA'?novaX:zipX,idx===6?245:230,now);
 g.restore();
 g.fillStyle='rgba(0,0,0,.42)';g.fillRect(0,665,W,55);g.fillStyle='#d7f9ef';g.font='bold 18px system-ui';g.fillText('STICKMAN STUDIO  •  THE WRONG BUTTON',640,700);
 $('dialogue').innerHTML='<b>'+b.who+':</b> “'+b.line+'”<br><span style="color:#b8c8dc">'+b.caption+'</span>';
-if(idx!==lastScene){lastScene=idx;if($('tts').checked&&!window.isRecording) speak(b.who+'. '+b.line)}
+if(idx!==lastScene){lastScene=idx;if($('tts').checked&&!window.isRecording) speak(b.line,b.who)}
 raf=requestAnimationFrame(draw);
 }
-function speak(txt){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(txt);u.rate=1.02;u.pitch=1.12;speechSynthesis.speak(u)}
+let availableVoices=[];
+function loadVoices(){
+if(!('speechSynthesis'in window))return;
+availableVoices=speechSynthesis.getVoices();
+['novaVoice','zipVoice'].forEach((id,idx)=>{let el=$(id);if(!el)return;let prior=el.value;el.innerHTML='';availableVoices.forEach((v,i)=>{let o=document.createElement('option');o.value=String(i);o.textContent=v.name+' ('+v.lang+')';el.appendChild(o)});if(availableVoices.length){el.value=prior||String(Math.min(idx,availableVoices.length-1))}else{el.innerHTML='<option value="">No device voices found</option>'}});
+}
+if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+function speak(txt,speaker='NOVA'){
+if(!('speechSynthesis'in window))return;
+speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(txt);
+let sel=$(speaker==='ZIP'?'zipVoice':'novaVoice'),v=availableVoices[Number(sel?.value)];
+if(v)u.voice=v;
+u.rate=speaker==='ZIP'?0.96:1.04;u.pitch=speaker==='ZIP'?.88:1.18;
+speechSynthesis.speak(u);
+}
 function startMusic(){if(audio)return;let AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audio=new AC();musicGain=audio.createGain();musicGain.gain.value=$('music').checked?.075:0;musicGain.connect(audio.destination);let out=audio.createMediaStreamDestination();musicGain.connect(out);window.musicTrack=out.stream;let n=[196,246.94,293.66,246.94,164.81,196,246.94,146.83],i=0;
 musicTimer=setInterval(()=>{let t=audio.currentTime;[n[i++%n.length],82.41].forEach((f,j)=>{let o=audio.createOscillator(),e=audio.createGain();o.type=j?'sine':'triangle';o.frequency.value=f;e.gain.setValueAtTime(.0001,t);e.gain.exponentialRampToValueAtTime(j?.12:.2,t+.035);e.gain.exponentialRampToValueAtTime(.0001,t+(j?.22:.28));o.connect(e);e.connect(musicGain);o.start(t);o.stop(t+(j?.23:.29))})},330)}
 $('music').onchange=()=>{if(musicGain)musicGain.gain.setTargetAtTime($('music').checked?.075:0,audio.currentTime,.1)};
 function restart(){cancelAnimationFrame(raf);start=performance.now();playing=true;lastScene=-1;startMusic();if(audio?.state==='suspended')audio.resume();$('play').textContent='Ⅱ Pause';draw(performance.now());$('status').textContent='Story restarted.'}
 $('play').onclick=()=>{if(playing){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play story';if('speechSynthesis'in window)speechSynthesis.cancel()}else{playing=true;start=performance.now();lastScene=-1;if(audio?.state==='suspended')audio.resume();$('play').textContent='Ⅱ Pause';draw(performance.now())}};
 $('restart').onclick=restart;
-$('preview').onclick=()=>{let txt=beats.map(b=>b.who+'. '+b.line).join(' ');speak(txt);$('status').textContent='Voice preview playing. Voices depend on your device.'};
+$('preview').onclick=()=>{let i=0;const next=()=>{if(i>=beats.length)return;let b=beats[i++];speak(b.line,b.who);let ms=Math.max(1900,b.line.length*65);window.voicePreviewTimer=setTimeout(next,ms)};clearTimeout(window.voicePreviewTimer);next();$('status').textContent='Previewing dialogue with separate Nova and Zip voices.'};
+$('testVoices').onclick=()=>{speak('Hello! I am Nova. Ready for an adventure?','NOVA');setTimeout(()=>speak('And I am Zip. Please think before pressing buttons.','ZIP'),2600)};
 $('record').onclick=async()=>{if(!c.captureStream||!window.MediaRecorder){$('status').textContent='Recording is not supported. Try Chrome.';return}
 try{startMusic();await audio.resume();mic=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});let dest=audio.createMediaStreamDestination(),ms=audio.createMediaStreamSource(mic);ms.connect(dest);musicGain.connect(dest);window.isRecording=true;if('speechSynthesis'in window)speechSynthesis.cancel();restart();let stream=c.captureStream(30);dest.stream.getAudioTracks().forEach(tr=>stream.addTrack(tr));let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';chunks=[];rec=new MediaRecorder(stream,{mimeType:mime});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{let blob=new Blob(chunks,{type:'video/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='stickman-the-wrong-button.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);mic?.getTracks().forEach(x=>x.stop());window.isRecording=false;$('status').textContent='Saved! Your microphone voice and background music are included.'};rec.start(1000);$('record').disabled=true;$('stop').disabled=false;$('status').textContent='Recording. Read the dialogue aloud as it appears. The episode is 44 seconds.'}catch(e){mic?.getTracks().forEach(x=>x.stop());$('status').textContent='Could not start microphone recording. Allow microphone access and try again.'}};
 $('stop').onclick=()=>{if(rec&&rec.state!=='inactive')rec.stop();$('record').disabled=false;$('stop').disabled=true};
